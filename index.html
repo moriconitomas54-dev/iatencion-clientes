@@ -3,3012 +3,692 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>IAtencion Clientes · Mostrador inteligente</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = { corePlugins: { preflight: false } };
-</script>
+<title>IAtencion · Repuestos y taller</title>
 <script defer src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #0B0F19;
-  --card: #131B2E;
-  --line: #253149;
-  --orange: #FF6B00;
-  --muted: #98a6bd;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: #edf2fa;
-  font: 14px/1.5 system-ui, sans-serif;
-}
-button, input, select, textarea { font: inherit; }
-button { cursor: pointer; }
-button:disabled { opacity: .45; cursor: not-allowed; }
-button, input, select, textarea, a { outline-offset: 4px; }
-input, select, textarea {
-  width: 100%;
-  background: #0b1220;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 11px;
-  color: #edf2fa;
-}
-input:focus, select:focus, textarea:focus {
-  outline: 2px solid var(--orange);
-}
-input[type=checkbox], input[type=radio] {
-  width: auto;
-  accent-color: var(--orange);
-}
-label {
-  display: block;
-  font-size: 12px;
-  color: #b6c2d5;
-  margin-bottom: 6px;
-}
-h1, h2, h3, p { margin: 0; }
-body h1 { font-size: 27px; letter-spacing: -1px; }
-body h2 { font-size: 16px; }
-body h3 { font-size: 14px; }
-small, .muted { color: var(--muted); }
-.hidden, [hidden] { display: none !important; }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 750;
-  letter-spacing: -.5px;
-}
-.logo {
-  background: var(--orange);
-  color: #111827;
-  padding: 8px 10px;
-  border-radius: 12px;
-  font-weight: 900;
-}
-.orange { color: var(--orange); }
-.shell {
-  max-width: 1480px;
-  margin: auto;
-  display: grid;
-  grid-template-columns: 218px minmax(0,1fr);
-  min-height: 100vh;
-}
-.sidebar {
-  border-right: 1px solid var(--line);
-  padding: 28px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  background: #0e1421;
-}
-.nav { display: grid; gap: 6px; }
-.nav button {
-  border: 0;
-  background: none;
-  color: var(--muted);
-  padding: 12px;
-  text-align: left;
-  border-radius: 9px;
-  font-weight: 600;
-}
-.nav button.active {
-  background: #ff6b0019;
-  color: #ff8a38;
-}
-.nav button:hover { background: #1a2336; }
-.sidebottom {
-  margin-top: auto;
-  padding: 16px 10px;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
-}
-.main { padding: 28px 32px; min-width: 0; }
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 30px;
-}
-.eyebrow {
-  font-size: 10px;
-  letter-spacing: 2px;
-  font-weight: 750;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 7px;
-}
-.badge {
-  display: inline-block;
-  font-size: 11px;
-  padding: 5px 9px;
-  border-radius: 7px;
-  background: #1c293c;
-  color: #bcc9dd;
-  white-space: nowrap;
-}
-.badge.green { background: #0e302b; color: #69ddad; }
-.btn {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  background: #1b273b;
-  border: 1px solid #304057;
-  color: #eaf0fa;
-  border-radius: 10px;
-  padding: 10px 15px;
-  font-weight: 650;
-  font-size: 12px;
-  text-decoration: none;
-}
-.btn:hover { background: #29364b; }
-.btn.primary {
-  background: var(--orange);
-  border-color: var(--orange);
-  color: #111827;
-  font-weight: 800;
-}
-.btn.primary:hover { background: #ed7a28; }
-.btn.whatsapp {
-  background: #13805d;
-  border-color: #13805d;
-  color: white;
-}
-.btn.small { padding: 7px 10px; font-size: 11px; }
-.full { width: 100%; }
-.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.between { justify-content: space-between; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
-.stack { display: grid; gap: 18px; }
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 22px;
-  min-width: 0;
-}
-.cardtitle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-.step {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 25px;
-  height: 25px;
-  background: #ff6b0017;
-  border: 1px solid #ff6b0033;
-  color: #ff9a52;
-  border-radius: 7px;
-  font-size: 12px;
-  margin-right: 9px;
-}
-.workspace {
-  display: grid;
-  grid-template-columns: minmax(0,1.3fr) minmax(320px,1fr);
-  gap: 20px;
-  align-items: start;
-}
-.field { margin-bottom: 14px; }
-.hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 12px;
-  margin-bottom: 22px;
-}
-.stat {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 15px;
-  background: #111a2b;
-}
-.stat strong {
-  display: block;
-  font-size: 24px;
-  letter-spacing: -.7px;
-  margin-top: 3px;
-}
-.summary {
-  background: #0c1423;
-  border-radius: 12px;
-  padding: 16px;
-  display: grid;
-  gap: 10px;
-  font-size: 12px;
-}
-.summary .row { justify-content: space-between; }
-.summary .total {
-  border-top: 1px solid var(--line);
-  padding-top: 13px;
-  font-size: 16px;
-}
-.summary strong { font-variant-numeric: tabular-nums; }
-.output { position: sticky; top: 22px; }
-.empty {
-  padding: 55px 20px;
-  text-align: center;
-  border: 1px dashed #33425a;
-  border-radius: 12px;
-  color: var(--muted);
-}
-.empty .symbol { font-size: 30px; margin-bottom: 15px; }
-.message {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  background: #0d3c35;
-  border: 1px solid #22584b;
-  padding: 18px;
-  border-radius: 0 14px 14px;
-  font-size: 13px;
-  line-height: 1.8;
-}
-.comanda { white-space: pre-wrap; font-size: 12px; color: #b6c2d5; }
-.notice {
-  font-size: 12px;
-  border: 1px solid #504329;
-  background: #2a241b;
-  color: #f0c576;
-  padding: 12px;
-  border-radius: 10px;
-}
-.error { color: #ffadad; }
-.success { color: #77e0b2; }
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
-.toolbar input { max-width: 330px; }
-.tablewrap {
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-table {
-  border-collapse: collapse;
-  width: 100%;
-  min-width: 640px;
-  font-size: 12px;
-  text-align: left;
-}
-th {
-  padding: 12px;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-  background: #0e1727;
-}
-td {
-  padding: 14px 12px;
-  border-top: 1px solid var(--line);
-  max-width: 300px;
-  overflow-wrap: anywhere;
-}
-.upload {
-  border: 1px dashed #465672;
-  background: #101a2b;
-  border-radius: 12px;
-  padding: 22px;
-  margin: 18px 0;
-}
-.upload input { margin-top: 12px; }
-.modal {
-  position: fixed;
-  inset: 0;
-  background: #070b12ef;
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  overflow: auto;
-}
-.modal .card {
-  max-width: 540px;
-  width: 100%;
-  max-height: 95vh;
-  overflow: auto;
-  padding: 30px;
-}
-.choice {
-  padding: 13px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  margin: 10px 0;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  color: #e9eff9;
-  cursor: pointer;
-}
-.choice:has(input:checked) {
-  border-color: #ff6b00;
-  background: #ff6b000b;
-}
-.choice small { display: block; font-size: 11px; margin-top: 3px; }
-.segmented {
-  display: flex;
-  background: #0a101b;
-  padding: 4px;
-  border-radius: 9px;
-  border: 1px solid var(--line);
-}
-.segmented button {
-  border: 0;
-  background: transparent;
-  color: #9aa9bd;
-  padding: 7px 12px;
-  font-size: 11px;
-  border-radius: 6px;
-}
-.segmented button.active { background: #26354b; color: white; }
-.tone-preview {
-  padding: 16px;
-  border-left: 2px solid var(--orange);
-  background: #0c1423;
-  color: #c4d0e0;
-  font-size: 13px;
-  border-radius: 0 10px 10px 0;
-  margin-top: 16px;
-}
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 80;
-  padding: 12px 20px;
-  background: #243651;
-  border: 1px solid #4b6080;
-  color: #fff;
-  border-radius: 12px;
-  max-width: 90%;
-  box-shadow: 0 10px 40px #0008;
-}
-.paper {
-  background: white;
-  color: #172033;
-  padding: 24px;
-  border-radius: 12px;
-  margin-top: 16px;
-  font-size: 12px;
-}
-.paper small { color: #475569; }
-.paper hr { border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0; }
-.paper .summary { background: #f1f5f9; }
-.paper .total { border-color: #cbd5e1; }
-#printArea { display: none; }
-.checkboxline { display: flex; gap: 8px; align-items: center; font-size: 12px; }
-.space { margin-top: 18px; }
-.subtle { font-size: 12px; color: var(--muted); }
-
-@media(max-width:1100px) {
-  .shell { grid-template-columns: 180px 1fr; }
-  .main { padding: 24px 20px; }
-  .workspace { grid-template-columns: 1fr; }
-  .output { position: static; }
-  .grid3 { grid-template-columns: 1fr 1fr; }
-}
-@media(max-width:640px) {
-  .shell { display: block; }
-  .sidebar {
-    padding: 16px;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-    gap: 18px;
-  }
-  .nav { display: grid; grid-template-columns: 1fr 1fr; }
-  .nav button { text-align: center; padding: 10px 5px; font-size: 12px; }
-  .sidebottom { display: none; }
-  .sidebar > .brand { justify-content: center; }
-  .main { padding: 20px 14px; }
-  .top { align-items: flex-start; margin-bottom: 20px; }
-  body .top h1 { font-size: 23px; }
-  .top > .row { justify-content: flex-end; }
-  .grid2, .grid3 { grid-template-columns: 1fr; }
-  .card { padding: 17px; }
-  .stats { gap: 7px; }
-  .stat { padding: 10px; font-size: 10px; }
-  .stat strong { font-size: 20px; }
-  .cardtitle { align-items: flex-start; }
-  .modal .card { padding: 22px; }
-  .top .segmented button { padding: 7px; }
-  .badge { font-size: 10px; }
-  td, th { padding: 10px; }
-  .hide-mobile { display: none; }
-}
-@media print {
-  body { background: white; color: black; }
-  .shell, .modal, .toast { display: none !important; }
-  #printArea { display: block !important; }
-  .paper { margin: 0; padding: 20px; }
-  .paper .summary { background: #f5f5f5; }
-  @page { size: A4; margin: 16mm; }
-}
+:root{color-scheme:dark;--bg:#0B0F19;--card:#131B2E;--border:#28354b;--orange:#FF6B00;--muted:#9aaac1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#eff4fc;font:14px/1.55 system-ui,sans-serif}
+h1,h2,h3,p{margin:0}h1{font-size:25px}h2{font-size:17px}h3{font-size:14px}
+button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+input,select,textarea{width:100%;padding:11px;background:#0b1322;color:inherit;border:1px solid var(--border);border-radius:9px}
+input[type=checkbox]{width:auto;accent-color:var(--orange)}
+label{display:block;font-size:12px;color:#bac7db;margin:12px 0 5px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+small,.muted{color:var(--muted)}small{display:block;margin-top:6px}
+header{border-bottom:1px solid var(--border);padding:20px;background:#101828}
+header>div,main{max-width:1240px;margin:auto}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.between{justify-content:space-between}
+.logo{background:var(--orange);color:#111827;font-weight:900;padding:9px 12px;border-radius:12px}
+.brand{font-size:18px;font-weight:800}.brand small{font-size:11px;font-weight:400;margin:0}
+main{padding:22px}
+.btn,nav button{border:1px solid var(--border);border-radius:9px;background:#1d2a40;color:#eff4fc;padding:10px 14px;font-weight:650;font-size:12px}
+.btn:hover,nav button:hover{background:#2c3c55}
+.primary,nav button.active{background:var(--orange);color:#101827;border-color:var(--orange)}
+.green{background:#147858}
+.badge{font-size:11px;border-radius:7px;padding:5px 9px;background:#27344b;color:#bfcde1}
+.badge.pro{background:#ff6b0020;color:#ffac72}
+nav{display:flex;gap:8px;margin:20px 0;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:20px;margin-bottom:18px;min-width:0}
+.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:start}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.space{margin-top:15px}.full{width:100%}.hidden,[hidden]{display:none!important}
+.check{display:flex;align-items:center;gap:8px}
+.summary{padding:15px;background:#0c1423;border-radius:10px;margin-top:15px}
+.summary .row{justify-content:space-between;margin:6px 0}
+.total{border-top:1px solid var(--border);padding-top:10px;font-size:17px}
+.ok{color:#7ee1b7}
+.notice{padding:12px;border:1px solid #715127;background:#302518;color:#ffd08c;border-radius:10px;font-size:12px}
+.message{white-space:pre-wrap;overflow-wrap:anywhere;background:#103c35;border:1px solid #2c5e51;border-radius:12px;padding:18px;font-size:13px}
+.empty{text-align:center;padding:55px 20px;color:var(--muted);border:1px dashed var(--border);border-radius:12px}
+.scroll{overflow:auto;margin-top:15px}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:12px;text-align:left}
+th,td{padding:12px;border-bottom:1px solid var(--border);max-width:260px;overflow-wrap:anywhere}
+th{color:var(--muted)}.mini{padding:6px 9px}.sticky{position:sticky;top:20px}
+#imagePreview{display:block;max-width:100%;max-height:300px;object-fit:contain;margin:12px auto;border-radius:10px}
+details summary{cursor:pointer;color:#ffab73}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:13px 20px;background:#293e5d;border:1px solid #587195;border-radius:12px;z-index:100;max-width:90%;box-shadow:0 8px 35px #0007}
+.paper{background:white;color:#182335;padding:24px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.paper h2{color:#e56812}.paper small{color:#536174}#printArea{display:none}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.sticky{position:static}}
+@media(max-width:550px){main{padding:14px}.card{padding:16px}.two{grid-template-columns:1fr}.brand{font-size:16px}h1{font-size:21px}nav button{flex:1}header{padding:15px}.row.between{align-items:flex-start}}
+@media print{body{background:white;color:black}header,main,#toast{display:none!important}#printArea{display:block!important}.paper{padding:0}@page{size:A4;margin:18mm}}
 </style>
 </head>
 
 <body>
+<header>
+  <div class="row between">
+    <div class="row"><span class="logo">IA</span><div class="brand">IAtencion Clientes<small>Casa de repuestos automotor y taller</small></div></div>
+    <div class="row"><span id="planBadge" class="badge">Plan Gratis</span><button id="switchPlan" class="btn primary">Probar PRO demo</button></div>
+  </div>
+</header>
 
-<!-- ONBOARDING -->
-<div id="onboarding" class="modal" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+<main>
+<details class="card">
+  <summary>¿Qué cambia entre Gratis y PRO?</summary>
+  <div class="two space">
+    <div><h3>Gratis · Atención de mostrador</h3><p class="muted">Stock manual y búsqueda, presupuestos con IVA, descuento configurable, dos tonos, validez, transferencia, vista de capturas y WhatsApp.</p></div>
+    <div><h3>PRO · Gestión del negocio</h3><p class="muted">Todo lo anterior + importar/exportar Excel, leer texto de capturas, cuotas, mensajes personalizados, agenda de turnos y presupuesto PDF.</p></div>
+  </div>
+  <small>El selector permite probar ambos planes. Es una demo: no realiza cobros ni activa una suscripción.</small>
+</details>
+
+<nav aria-label="Herramientas">
+  <button data-tab="ventas" class="active">Mostrador</button>
+  <button data-tab="stock">Stock</button>
+  <button data-tab="turnos">Turnos · PRO</button>
+  <button data-tab="config">Configuración</button>
+</nav>
+
+<!-- MOSTRADOR -->
+<section id="ventas" class="view">
+<div class="grid"><div>
   <div class="card">
-    <div class="brand">
-      <span class="logo">IA</span>
-      <span><span class="orange">IA</span>tencion Clientes</span>
+    <h2>1. Consulta del cliente</h2>
+    <div class="two">
+      <div><label for="client">Cliente</label><input id="client" maxlength="100" placeholder="Nombre del cliente"></div>
+      <div><label for="phone">WhatsApp</label><input id="phone" type="tel" placeholder="3415551234 o +54 9…"></div>
     </div>
+    <small>Celular argentino: 10 dígitos con código de área, sin 0 ni 15. Otros países: número con +.</small>
+    <label for="query">Consulta o pedido</label><textarea id="query" rows="3" maxlength="5000" placeholder="Describí la consulta o usá una captura…"></textarea>
+    <button id="example" class="btn mini space">Cargar ejemplo</button>
 
-    <div style="margin:24px 0">
-      <div class="eyebrow">Tu negocio, mejor atendido</div>
-      <h1 id="welcomeTitle">Abrí tu mostrador.</h1>
-      <p class="muted" style="margin-top:8px">Consultas, stock y presupuestos en un solo lugar.</p>
+    <details class="space">
+      <summary>Subir captura de WhatsApp</summary>
+      <label for="imageFile">Captura PNG, JPG o WebP (máximo 8 MB)</label>
+      <input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp">
+      <div id="imageBox" hidden>
+        <img id="imagePreview" alt="Captura de la consulta">
+        <div class="row"><button id="readImage" class="btn" data-pro>Leer texto · PRO</button><button id="removeImage" class="btn">Quitar captura</button></div>
+      </div>
+      <small id="ocrStatus" role="status">La captura queda en esta sesión. La lectura de texto se procesa en el navegador.</small>
+      <div id="ocrReview" hidden>
+        <label for="ocrText">Texto detectado: revisalo antes de usarlo</label>
+        <textarea id="ocrText" rows="4" maxlength="5000"></textarea>
+        <button id="useOcr" class="btn primary space" data-pro>Agregar a la consulta</button>
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>2. Presupuesto y pago</h2>
+    <label for="product">Producto del inventario</label><select id="product"></select>
+    <div class="two">
+      <div><label for="quantity">Cantidad</label><input id="quantity" type="number" min="1" max="100000" step="1" value="1"></div>
+      <div><label for="amount">Subtotal con IVA ($)</label><input id="amount" type="number" min="0" max="1000000000" step="0.01" value="140000"></div>
     </div>
-
-    <label for="emailDemo">Cuenta de demostración</label>
-    <input id="emailDemo" value="ejemploparahackaton@negocio.com" disabled>
-
-    <fieldset style="border:0;padding:0;margin:20px 0">
-      <legend class="subtle">Elegí el rubro de tu negocio</legend>
-
-      <label class="choice">
-        <input type="radio" name="rubro" value="repuestos" checked>
-        <span><b>🔧 Repuestos y taller</b><small>Piezas, disponibilidad y presupuestos.</small></span>
-      </label>
-
-      <label class="choice">
-        <input type="radio" name="rubro" value="gastronomia">
-        <span><b>🍔 Gastronomía</b><small>Productos, pedidos y delivery.</small></span>
-      </label>
-
-      <label class="choice">
-        <input type="radio" name="rubro" value="servicios">
-        <span><b>🎸 Servicios y clases</b><small>Catálogo de servicios y cotizaciones.</small></span>
-      </label>
+    <small id="availability">Disponibilidad a confirmar.</small>
+    <div class="two">
+      <div><label for="vat">IVA incluido en el subtotal</label><select id="vat"><option value="21">21%</option><option value="10.5">10,5%</option><option value="0">Sin discriminar</option></select></div>
+      <div><label for="discount">Descuento efectivo / transferencia (%)</label><input id="discount" type="number" min="0" max="100" step="0.01" value="10"></div>
+      <div><label for="shipping">Entrega</label><select id="shipping"><option value="mostrador">Retiro en mostrador</option><option value="moto">Envío local</option><option value="correo">Correo / encomienda</option></select></div>
+      <div><label for="shippingCost">Costo de envío ($)</label><input id="shippingCost" type="number" min="0" max="1000000" step="0.01" value="0" disabled></div>
+    </div>
+    <fieldset data-pro>
+      <label class="check"><input id="offerInstallments" type="checkbox"> Ofrecer cuotas <span class="badge pro">PRO</span></label>
+      <div id="installmentFields" class="two" hidden>
+        <div><label for="installments">Cantidad de cuotas</label><input id="installments" type="number" min="2" max="60" step="1" value="3"></div>
+        <div><label for="surcharge">Recargo total (%)</label><input id="surcharge" type="number" min="0" max="500" step="0.01" value="0"></div>
+      </div>
     </fieldset>
+    <small>Descuento solo sobre productos. Cuotas sobre lista + envío, sin descuento. Recargo 0 = sin interés.</small>
+    <div id="totals" class="summary" aria-live="polite"></div>
+  </div>
 
-    <button class="btn primary full" id="start">Iniciar mostrador →</button>
-    <p class="hint" style="text-align:center;margin-top:14px">
-      Demo local · Tus datos se guardan en este navegador.
-    </p>
+  <div class="card">
+    <h2>3. Respuesta y condiciones</h2>
+    <div class="two">
+      <div><label for="tone">Trato</label><select id="tone"><option value="formal">Formal</option><option value="informal">Informal</option></select></div>
+      <div><label for="validUntil">Oferta válida hasta</label><input id="validUntil" type="datetime-local"></div>
+    </div>
+    <label class="check"><input id="includeTransfer" type="checkbox"> Incluir datos de transferencia</label>
+    <label for="quoteAppointment">Turno asociado · PRO</label><select id="quoteAppointment" data-pro><option value="">Sin turno</option></select>
+    <label for="note">Nota adicional (opcional)</label><textarea id="note" rows="2" maxlength="1000" placeholder="Ej.: la colocación se cotiza por separado."></textarea>
+    <button id="generate" class="btn primary full space">Generar presupuesto y respuesta</button>
+    <p id="error" class="space" role="alert"></p>
   </div>
 </div>
 
-<div class="shell">
-
-  <!-- MENÚ -->
-  <aside class="sidebar">
-    <div class="brand">
-      <span class="logo">IA</span>
-      <span>
-        IAtencion
-        <small style="display:block;font-weight:400;font-size:10px;letter-spacing:1px">CLIENTES</small>
-      </span>
+<aside class="card sticky">
+  <div class="row between"><h2>Listo para enviar</h2><span class="badge">WhatsApp</span></div>
+  <div id="empty" class="empty space">Generá el presupuesto para ver la respuesta.</div>
+  <div id="result" hidden>
+    <div id="stale" class="notice space" hidden>Hay cambios. Generá nuevamente la respuesta antes de enviarla.</div>
+    <details class="space"><summary>Comanda interna</summary><p id="order" style="white-space:pre-wrap"></p></details>
+    <p id="message" class="message space"></p>
+    <div class="row space">
+      <button id="send" class="btn green">Abrir WhatsApp</button>
+      <button id="copy" class="btn">Copiar</button>
+      <button id="pdf" class="btn" data-pro>Guardar PDF · PRO</button>
     </div>
-
-    <div>
-      <div class="eyebrow" style="padding-left:12px">Herramientas</div>
-      <nav class="nav" aria-label="Herramientas">
-        <button data-view="ventas" class="active" aria-current="page">▤ &nbsp; Mostrador</button>
-        <button data-view="stock">▦ &nbsp; Stock y Excel</button>
-        <button data-view="turnos">▣ &nbsp; Turnos</button>
-        <button data-view="ajustes">⚙ &nbsp; Configuración</button>
-      </nav>
-    </div>
-
-    <div class="sidebottom">
-      <span class="badge green">● Motor local listo</span>
-      <p style="margin-top:12px">Respondé mejor.<br>Vendé con todo a mano.</p>
-      <p class="hint" style="margin-top:18px">IAtencion · Demo hackatón</p>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="top">
-      <div>
-        <div class="eyebrow" id="sectorLabel">Repuestos y taller</div>
-        <h1 id="pageTitle">Tu mostrador inteligente</h1>
-        <p class="subtle" id="pageSubtitle">De la consulta al presupuesto, en segundos.</p>
-      </div>
-      <div class="row">
-        <span class="badge hide-mobile">Demo local</span>
-        <div class="segmented" aria-label="Plan de demostración">
-          <button id="freePlan" class="active" aria-pressed="true">Gratis</button>
-          <button id="proPlan" aria-pressed="false">♛ Pro demo</button>
-        </div>
-      </div>
-    </header>
-
-    <!-- MOSTRADOR -->
-    <section id="view-ventas">
-      <div class="workspace">
-        <div class="stack">
-
-          <article class="card">
-            <div class="cardtitle">
-              <h2><span class="step">1</span>Consulta del cliente</h2>
-              <button class="btn small" id="example">✧ Cargar ejemplo</button>
-            </div>
-
-            <div class="grid2">
-              <div class="field">
-                <label for="client">Nombre del cliente</label>
-                <input id="client" value="Lucas Pérez" maxlength="100">
-              </div>
-              <div class="field">
-                <label for="phone">WhatsApp</label>
-                <input id="phone" type="tel" placeholder="+54 9 341 5551234">
-                <p class="hint">
-                  Celular argentino: 10 dígitos con código de área, sin 0 ni 15;
-                  o número internacional con +.
-                </p>
-              </div>
-            </div>
-
-            <label for="query">¿Qué necesita?</label>
-            <textarea id="query" rows="3" maxlength="2000"
-              placeholder="Pegá acá la consulta o describí el pedido…"></textarea>
-
-            <div class="space">
-              <div class="row between">
-                <label for="product">Consultar catálogo</label>
-                <button class="btn small" id="openStock">Ver inventario ↗</button>
-              </div>
-              <select id="product">
-                <option value="">Presupuesto manual · sin producto seleccionado</option>
-              </select>
-            </div>
-
-            <div class="grid2 space">
-              <div>
-                <label for="quantity">Cantidad a presupuestar</label>
-                <input id="quantity" type="number" min="1" step="1" max="100000" value="1">
-              </div>
-              <div>
-                <label>Disponibilidad</label>
-                <p id="availability" class="hint" role="status">
-                  Seleccioná un producto para consultar stock.
-                </p>
-              </div>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="cardtitle">
-              <h2><span class="step">2</span>Presupuesto y pago</h2>
-              <span class="badge">ARS · Pesos</span>
-            </div>
-
-            <div class="grid2">
-              <div class="field">
-                <label for="amount">Subtotal de productos / servicio (IVA incluido)</label>
-                <input id="amount" type="number" min="0" max="1000000000000"
-                  step="0.01" value="140000">
-                <p class="hint">Total de los productos, antes del descuento y envío.</p>
-              </div>
-              <div class="field">
-                <label for="vat">Desglose del IVA incluido</label>
-                <select id="vat">
-                  <option value="21">21%</option>
-                  <option value="10.5">10,5%</option>
-                  <option value="0">Sin discriminar</option>
-                </select>
-                <p class="hint">No agrega IVA al precio ingresado.</p>
-              </div>
-            </div>
-
-            <div class="grid2">
-              <div class="field">
-                <label for="shipping">Entrega</label>
-                <select id="shipping">
-                  <option value="mostrador">Retiro en mostrador</option>
-                  <option value="moto">Envío local / cadete</option>
-                  <option value="correo">Correo / encomienda</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="shippingCost">Costo de envío ($)</label>
-                <input id="shippingCost" type="number" min="0" max="10000000"
-                  step="0.01" value="0" disabled>
-              </div>
-            </div>
-
-            <div class="grid2">
-              <div class="field">
-                <label for="discount">Descuento efectivo / transferencia (%)</label>
-                <input id="discount" type="number" min="0" max="100" step="0.01" value="10">
-                <p class="hint">Poné 0 para no ofrecer descuento.</p>
-              </div>
-              <div class="field">
-                <label class="checkboxline" for="offerInstallments">
-                  <input id="offerInstallments" type="checkbox">
-                  Ofrecer pago en cuotas
-                </label>
-                <p class="hint">Se calcula sobre el precio de lista, sin descuento.</p>
-              </div>
-            </div>
-
-            <div id="installmentFields" class="grid2 hidden">
-              <div class="field">
-                <label for="installments">Cantidad de cuotas</label>
-                <input id="installments" type="number" min="2" max="60" step="1" value="3">
-              </div>
-              <div class="field">
-                <label for="surcharge">Recargo total de la financiación (%)</label>
-                <input id="surcharge" type="number" min="0" max="500" step="0.01" value="0">
-                <p class="hint">0 = sin interés. No es una tasa mensual.</p>
-              </div>
-            </div>
-
-            <div id="calcError" class="notice hidden" role="alert"></div>
-            <div id="totals" class="summary" aria-live="polite"></div>
-          </article>
-
-          <article class="card">
-            <div class="cardtitle">
-              <h2><span class="step">3</span>Elegí cómo responder</h2>
-              <span class="badge">Sin API · plantillas locales</span>
-            </div>
-
-            <label for="tone">Tono del mensaje</label>
-            <select id="tone">
-              <option value="formal">Formal · trato profesional</option>
-              <option value="informal">Informal · cercano y con emojis</option>
-            </select>
-
-            <p id="tonePreview" class="tone-preview"></p>
-
-            <div class="grid2 space">
-              <div>
-                <label for="validUntil">Oferta válida hasta</label>
-                <input id="validUntil" type="datetime-local">
-              </div>
-              <div>
-                <label for="quoteAppointment">Agregar un turno al presupuesto</label>
-                <select id="quoteAppointment">
-                  <option value="">Sin turno asociado</option>
-                </select>
-                <p class="hint">La agenda permite reservar, confirmar y reprogramar.</p>
-              </div>
-            </div>
-
-            <label class="checkboxline space" for="includeTransfer">
-              <input id="includeTransfer" type="checkbox">
-              Incluir datos de transferencia
-            </label>
-            <p class="hint">Guardalos en Configuración. También podés enviarlos por separado.</p>
-
-            <label for="quoteNote" class="space">Nota adicional para este cliente (opcional)</label>
-            <textarea id="quoteNote" rows="2" maxlength="1000"
-              placeholder="Por ejemplo: la colocación se cotiza por separado."></textarea>
-
-            <button id="generate" class="btn primary full space">
-              ⚡ Generar presupuesto y respuesta
-            </button>
-            <p id="generateError" class="error hint" role="alert"></p>
-          </article>
-        </div>
-
-        <!-- RESPUESTA -->
-        <aside class="card output">
-          <div class="cardtitle">
-            <div class="row">
-              <span style="font-size:20px">↗</span>
-              <h2>Listo para tu cliente</h2>
-            </div>
-            <span id="planBadge" class="badge">Plan Gratis</span>
-          </div>
-
-          <div id="empty" class="empty">
-            <div class="symbol">☏</div>
-            <h3 style="color:#d5deed">Una respuesta que cierra.</h3>
-            <p style="margin-top:8px;font-size:12px">
-              Completá el pedido y generá un mensaje<br>con precios y condiciones claras.
-            </p>
-          </div>
-
-          <div id="result" class="hidden">
-            <div id="stale" class="notice hidden" style="margin-bottom:16px">
-              Cambiaste datos del pedido. Generá la respuesta nuevamente
-              para enviar los importes actualizados.
-            </div>
-
-            <div class="eyebrow">Comanda interna</div>
-            <p id="order" class="comanda"></p>
-
-            <div class="eyebrow space">Respuesta para WhatsApp</div>
-            <div id="message" class="message"></div>
-
-            <div class="stack space" style="gap:10px">
-              <button id="whatsapp" class="btn whatsapp full">
-                Abrir WhatsApp con este mensaje ↗
-              </button>
-              <button id="copy" class="btn full">Copiar respuesta</button>
-            </div>
-
-            <p class="hint">
-              Revisá el mensaje antes de enviarlo. WhatsApp se abre con el texto preparado.
-            </p>
-
-            <div id="pdfPanel" class="hidden">
-              <div class="eyebrow space">Presupuesto Pro</div>
-              <div id="pdfPreview"></div>
-              <button id="print" class="btn full space">Imprimir / guardar como PDF</button>
-              <p class="hint">En el diálogo de impresión, elegí “Guardar como PDF”.</p>
-            </div>
-          </div>
-
-          <details class="space">
-            <summary style="cursor:pointer">Datos de transferencia por separado</summary>
-            <p id="transferPreview" class="comanda space"></p>
-            <div class="row space">
-              <button id="copyTransfer" class="btn small">Copiar datos</button>
-              <button id="sendTransfer" class="btn small">Abrir en WhatsApp</button>
-            </div>
-            <p class="hint">
-              Usa el teléfono del cliente del mostrador. No acredita ni verifica pagos.
-            </p>
-          </details>
-
-          <div id="proHint" class="notice space">
-            ♛ Probá Pro demo para ver el presupuesto imprimible.
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- STOCK -->
-    <section id="view-stock" class="hidden">
-      <div class="stats">
-        <div class="stat">
-          <span>Productos</span>
-          <strong id="countProducts">0</strong>
-        </div>
-        <div class="stat">
-          <span>Unidades disponibles</span>
-          <strong id="countUnits">0</strong>
-        </div>
-        <div class="stat">
-          <span>Sin stock</span>
-          <strong id="countEmpty">0</strong>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cardtitle">
-          <div>
-            <h2>Tu inventario, a mano</h2>
-            <p class="hint">
-              Buscá por producto, código o ubicación. Presupuestar no descuenta stock.
-            </p>
-          </div>
-          <span class="badge" id="stockSource">Catálogo demo</span>
-        </div>
-
-        <div class="toolbar">
-          <input id="search" type="search"
-            placeholder="Buscar producto, código o ubicación…"
-            aria-label="Buscar en inventario">
-          <div class="row">
-            <button id="template" class="btn">↓ Plantilla Excel</button>
-            <button id="export" class="btn">Exportar stock</button>
-          </div>
-        </div>
-
-        <div class="tablewrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Producto</th>
-                <th>Stock</th>
-                <th>Precio</th>
-                <th>Ubicación</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="inventory"></tbody>
-          </table>
-        </div>
-
-        <p id="stockCount" class="hint"></p>
-        <p class="hint">
-          En pantallas pequeñas, deslizá la tabla hacia los costados para ver todas las columnas.
-        </p>
-
-        <div class="upload">
-          <h3>Importar stock desde Excel</h3>
-          <p class="hint">
-            Archivos .xlsx, .xls o .csv · Máximo 5 MB y 5.000 filas.
-            Primera fila: Código, Producto, Stock, Precio, Ubicación (opcional).
-            Cada código debe ser único.
-          </p>
-
-          <input id="file" type="file" accept=".xlsx,.xls,.csv"
-            aria-label="Subir archivo de stock">
-
-          <p class="hint">
-            Los archivos se procesan en este navegador.
-            Usá números de Excel o precios de texto como 140000,50 o 140.000,50.
-          </p>
-
-          <div id="importPanel" class="hidden space">
-            <div class="grid2">
-              <div>
-                <label for="sheet">Hoja del archivo</label>
-                <select id="sheet"></select>
-              </div>
-              <div>
-                <label for="importMode">Cómo guardar</label>
-                <select id="importMode">
-                  <option value="merge">Actualizar por código y agregar nuevos</option>
-                  <option value="replace">Reemplazar todo el catálogo de este rubro</option>
-                </select>
-              </div>
-            </div>
-
-            <p id="importStatus" class="hint" role="status"></p>
-            <div id="importPreview" class="tablewrap space"></div>
-
-            <p id="replaceWarning" class="notice hidden space">
-              Se reemplazará el catálogo completo de este rubro.
-              Exportá el stock actual si querés conservar una copia.
-            </p>
-
-            <div class="row space">
-              <button id="confirmImport" class="btn primary" disabled>
-                Confirmar importación
-              </button>
-              <button id="cancelImport" class="btn">Cancelar</button>
-            </div>
-          </div>
-
-          <p id="fileError" class="error hint" role="alert"></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- TURNOS -->
-    <section id="view-turnos" class="hidden">
-      <div class="workspace">
-        <div class="card">
-          <div class="cardtitle">
-            <h2 id="appointmentTitle">Nuevo turno</h2>
-            <span class="badge">Agenda local</span>
-          </div>
-
-          <p class="hint">
-            Los turnos pendientes y confirmados ocupan el horario del responsable.
-          </p>
-
-          <form id="appointmentForm" class="space">
-            <div class="grid2">
-              <div class="field">
-                <label for="appointmentClient">Cliente</label>
-                <input id="appointmentClient" required maxlength="100">
-              </div>
-              <div class="field">
-                <label for="appointmentPhone">WhatsApp (opcional)</label>
-                <input id="appointmentPhone" type="tel" maxlength="30">
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="appointmentService">Servicio / motivo</label>
-              <input id="appointmentService" required maxlength="200"
-                placeholder="Cambio de embrague, clase de guitarra…">
-            </div>
-
-            <div class="grid2">
-              <div class="field">
-                <label for="appointmentStart">Fecha y hora</label>
-                <input id="appointmentStart" type="datetime-local" required>
-              </div>
-              <div class="field">
-                <label for="appointmentDuration">Duración (minutos)</label>
-                <input id="appointmentDuration" type="number"
-                  min="5" max="480" step="5" value="60" required>
-              </div>
-              <div class="field">
-                <label for="appointmentResource">Responsable / puesto</label>
-                <input id="appointmentResource" value="Principal" required maxlength="80">
-                <p class="hint">Usá el mismo nombre para controlar cruces de horario.</p>
-              </div>
-              <div class="field">
-                <label for="appointmentStatus">Estado</label>
-                <select id="appointmentStatus">
-                  <option value="pendiente">Pendiente de confirmación</option>
-                  <option value="confirmado">Confirmado</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="appointmentNotes">Notas internas (no se envían al cliente)</label>
-              <textarea id="appointmentNotes" rows="2" maxlength="1000"></textarea>
-            </div>
-
-            <div class="row">
-              <button class="btn primary" type="submit" id="saveAppointment">
-                Guardar turno
-              </button>
-              <button class="btn" type="button" id="resetAppointment">
-                Limpiar / cancelar edición
-              </button>
-              <button class="btn" type="button" id="useCustomer">
-                Usar cliente del mostrador
-              </button>
-            </div>
-            <p id="appointmentError" class="error hint" role="alert"></p>
-          </form>
-        </div>
-
-        <div class="card">
-          <h2>Mensaje del turno</h2>
-          <p class="hint">
-            Guardá un turno o seleccioná “Mensaje” en la agenda para preparar la respuesta.
-          </p>
-
-          <p id="appointmentMessage" class="message space">
-            Todavía no seleccionaste un turno.
-          </p>
-
-          <div class="row space">
-            <button id="copyAppointment" class="btn" disabled>Copiar mensaje</button>
-            <button id="sendAppointment" class="btn whatsapp" disabled>Abrir WhatsApp</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card space">
-        <div class="cardtitle">
-          <h2>Agenda de turnos</h2>
-          <span class="badge" id="appointmentCount"></span>
-        </div>
-
-        <div class="grid2">
-          <div class="field">
-            <label for="appointmentFilterDate">Filtrar por fecha (vacío = todas)</label>
-            <input id="appointmentFilterDate" type="date">
-          </div>
-          <div class="field">
-            <label for="appointmentFilterStatus">Mostrar</label>
-            <select id="appointmentFilterStatus">
-              <option value="activos">Pendientes y confirmados</option>
-              <option value="todos">Todos, incluidos cancelados</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="tablewrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha y horario</th>
-                <th>Cliente / servicio</th>
-                <th>Responsable</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="appointmentList"></tbody>
-          </table>
-        </div>
-
-        <p class="hint">
-          Los turnos se conservan en este navegador.
-          No se sincronizan con calendarios externos.
-        </p>
-      </div>
-    </section>
-
-    <!-- CONFIGURACIÓN -->
-    <section id="view-ajustes" class="hidden">
-      <div class="card" style="max-width:780px">
-        <div class="cardtitle">
-          <h2>Configuración del negocio</h2>
-          <span class="badge">Guardado local</span>
-        </div>
-
-        <div class="field">
-          <label for="business">Nombre comercial</label>
-          <input id="business" value="Taller & Repuestos" maxlength="100">
-        </div>
-
-        <div class="field">
-          <label for="sector">Rubro</label>
-          <select id="sector">
-            <option value="repuestos">Repuestos y taller</option>
-            <option value="gastronomia">Gastronomía</option>
-            <option value="servicios">Servicios y clases</option>
-          </select>
-          <p class="hint">
-            Cada rubro conserva su propio inventario. Cambiarlo limpia el pedido actual.
-          </p>
-        </div>
-
-        <div class="grid2">
-          <div class="field">
-            <label for="defaultDiscount">Descuento predeterminado (%)</label>
-            <input id="defaultDiscount" type="number"
-              min="0" max="100" step="0.01" value="10">
-          </div>
-          <div class="field">
-            <label for="defaultTone">Tono predeterminado</label>
-            <select id="defaultTone">
-              <option value="formal">Formal · trato profesional</option>
-              <option value="informal">Informal · cercano y con emojis</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div class="field">
-            <label for="validityDays">Validez predeterminada de la oferta (días)</label>
-            <input id="validityDays" type="number" min="1" max="90" value="7">
-          </div>
-          <div class="field">
-            <label for="signature">Firma del mensaje (opcional)</label>
-            <input id="signature" maxlength="200"
-              placeholder="Nombre del negocio o de quien atiende">
-          </div>
-        </div>
-
-        <div class="cardtitle space">
-          <h2>Personalizá tus mensajes</h2>
-        </div>
-
-        <label for="editTone">Estilo que querés editar</label>
-        <select id="editTone">
-          <option value="formal">Formal</option>
-          <option value="informal">Informal</option>
-        </select>
-
-        <p class="hint">
-          Variables disponibles: {cliente}, {negocio} y {validez}.
-          Los precios se agregan automáticamente.
-        </p>
-
-        <label for="customOpening" class="space">Saludo e introducción</label>
-        <textarea id="customOpening" rows="3" maxlength="1000"></textarea>
-
-        <label for="customClosing" class="space">Cierre</label>
-        <textarea id="customClosing" rows="3" maxlength="1000"></textarea>
-
-        <p id="customPreview" class="tone-preview" style="white-space:pre-wrap"></p>
-
-        <div class="cardtitle space">
-          <h2>Datos para transferencia</h2>
-        </div>
-
-        <div class="grid2">
-          <div class="field">
-            <label for="bankHolder">Titular de la cuenta</label>
-            <input id="bankHolder" maxlength="120">
-          </div>
-          <div class="field">
-            <label for="bankName">Banco / billetera (opcional)</label>
-            <input id="bankName" maxlength="100">
-          </div>
-          <div class="field">
-            <label for="bankAlias">Alias</label>
-            <input id="bankAlias" maxlength="60" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="bankAccount">CBU / CVU (22 dígitos, opcional si hay alias)</label>
-            <input id="bankAccount" inputmode="numeric" maxlength="22" autocomplete="off">
-          </div>
-        </div>
-
-        <p class="hint">
-          Se guardan en este navegador.
-          Solo se incluyen si elegís agregarlos o enviarlos.
-        </p>
-
-        <button id="saveSettings" class="btn primary space">
-          Guardar y aplicar al mostrador
-        </button>
-
-        <p class="hint space">
-          Esta versión usa respuestas locales y datos de este navegador.
-          No requiere clave de API. Las cuotas son una propuesta comercial; no procesan cobros.
-        </p>
-
-        <p id="settingsError" class="error hint" role="alert"></p>
-      </div>
-    </section>
-  </main>
+    <small>Revisá y enviá el mensaje desde WhatsApp. PDF abre el diálogo de impresión.</small>
+  </div>
+  <details class="space">
+    <summary>Enviar datos de transferencia por separado</summary>
+    <p id="transferPreview" style="white-space:pre-wrap"></p>
+    <div class="row space"><button id="copyBank" class="btn mini">Copiar datos</button><button id="sendBank" class="btn mini">Abrir WhatsApp</button></div>
+  </details>
+</aside>
 </div>
+</section>
 
-<div id="toast" role="status" class="toast hidden"></div>
+<!-- STOCK -->
+<section id="stock" class="view" hidden>
+  <div class="card">
+    <div class="row between"><h2>Stock de repuestos</h2><span id="stockCount" class="badge"></span></div>
+    <label for="search">Buscar por producto, código o ubicación</label><input id="search" type="search">
+    <div class="scroll"><table><thead><tr><th>Código</th><th>Producto</th><th>Stock</th><th>Precio</th><th>Ubicación</th><th>Acciones</th></tr></thead><tbody id="stockRows"></tbody></table></div>
+    <small>Presupuestar no reserva ni descuenta stock. En celular podés desplazar la tabla.</small>
+  </div>
+  <div class="two">
+    <div class="card">
+      <h2>Agregar / actualizar repuesto</h2>
+      <form id="productForm">
+        <label for="code">Código único</label><input id="code" required maxlength="60">
+        <label for="productName">Producto</label><input id="productName" required maxlength="200">
+        <div class="two">
+          <div><label for="productStock">Stock</label><input id="productStock" type="number" min="0" max="1000000" step="1" required></div>
+          <div><label for="productPrice">Precio con IVA ($)</label><input id="productPrice" type="number" min="0" max="1000000000" step="0.01" required></div>
+        </div>
+        <label for="location">Ubicación</label><input id="location" maxlength="100">
+        <button class="btn primary space">Guardar repuesto</button>
+        <small>Un código existente actualiza ese producto.</small>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Excel <span class="badge pro">PRO</span></h2>
+      <p class="muted space">Importá una lista completa o exportá tu inventario.</p>
+      <fieldset data-pro>
+        <div class="row space"><button id="template" class="btn">Plantilla</button><button id="exportStock" class="btn">Exportar</button></div>
+        <label for="excelFile">Archivo .xlsx, .xls o .csv</label><input id="excelFile" type="file" accept=".xlsx,.xls,.csv">
+        <small>Máximo 5 MB / 5.000 productos. Columnas: Código, Producto, Stock, Precio, Ubicación (opcional).</small>
+        <div id="importPanel" hidden>
+          <label for="sheet">Hoja</label><select id="sheet"></select>
+          <label for="importMode">Importación</label><select id="importMode"><option value="merge">Actualizar por código y agregar nuevos</option><option value="replace">Reemplazar todo el inventario</option></select>
+          <p id="importStatus" class="space" role="status"></p><div id="importPreview" class="scroll"></div>
+          <p class="notice space">Reemplazar borra el catálogo anterior. Exportalo antes si querés conservarlo.</p>
+          <div class="row space"><button id="confirmImport" class="btn primary" disabled>Confirmar importación</button><button id="cancelImport" class="btn">Cancelar</button></div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</section>
+
+<!-- TURNOS -->
+<section id="turnos" class="view" hidden>
+  <div id="agendaLock" class="notice">La agenda es PRO. Activá “Probar PRO demo” para reservar y gestionar turnos.</div>
+  <div id="agendaContent" hidden>
+    <div class="grid">
+      <div class="card">
+        <h2 id="appointmentTitle">Nuevo turno</h2>
+        <form id="appointmentForm">
+          <div class="two">
+            <div><label for="appointmentClient">Cliente</label><input id="appointmentClient" required maxlength="100"></div>
+            <div><label for="appointmentPhone">WhatsApp (opcional)</label><input id="appointmentPhone" type="tel" maxlength="30"></div>
+          </div>
+          <label for="appointmentService">Trabajo a realizar</label><input id="appointmentService" required maxlength="200">
+          <div class="two">
+            <div><label for="appointmentStart">Fecha y hora</label><input id="appointmentStart" type="datetime-local" required></div>
+            <div><label for="appointmentDuration">Duración en minutos</label><input id="appointmentDuration" type="number" min="5" max="480" step="5" value="60" required></div>
+            <div><label for="appointmentResource">Mecánico / puesto</label><input id="appointmentResource" value="Principal" required maxlength="80"></div>
+            <div><label for="appointmentStatus">Estado</label><select id="appointmentStatus"><option value="pendiente">Pendiente</option><option value="confirmado">Confirmado</option></select></div>
+          </div>
+          <label for="appointmentNotes">Notas internas</label><textarea id="appointmentNotes" rows="2" maxlength="1000"></textarea>
+          <div class="row space">
+            <button class="btn primary">Guardar turno</button>
+            <button id="resetAppointment" type="button" class="btn">Limpiar</button>
+            <button id="useCustomer" type="button" class="btn">Usar cliente del mostrador</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Mensaje del turno</h2><p id="appointmentMessage" class="message space">Seleccioná o guardá un turno.</p>
+        <div class="row space"><button id="copyAppointment" class="btn" disabled>Copiar</button><button id="sendAppointment" class="btn green" disabled>Abrir WhatsApp</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row between"><h2>Agenda del taller</h2><label class="check"><input id="showClosed" type="checkbox"> Mostrar cancelados y completados</label></div>
+      <div class="scroll"><table><thead><tr><th>Fecha / duración</th><th>Cliente / trabajo</th><th>Puesto</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="appointmentRows"></tbody></table></div>
+      <small>Se bloquean superposiciones para el mismo puesto. Los turnos se guardan en este navegador.</small>
+    </div>
+  </div>
+</section>
+
+<!-- CONFIGURACIÓN -->
+<section id="config" class="view" hidden>
+<div class="card">
+  <h2>Configuración del negocio</h2>
+  <form id="settingsForm">
+    <label for="business">Nombre comercial</label><input id="business" required maxlength="100">
+    <div class="two">
+      <div><label for="defaultDiscount">Descuento predeterminado (%)</label><input id="defaultDiscount" type="number" min="0" max="100" step="0.01" required></div>
+      <div><label for="validityDays">Validez predeterminada (días)</label><input id="validityDays" type="number" min="1" max="90" required></div>
+    </div>
+    <label for="defaultTone">Trato predeterminado</label><select id="defaultTone"><option value="formal">Formal</option><option value="informal">Informal</option></select>
+    <h3 class="space">Datos para transferencia</h3>
+    <div class="two">
+      <div><label for="bankHolder">Titular</label><input id="bankHolder" maxlength="120"></div>
+      <div><label for="bankName">Banco / billetera</label><input id="bankName" maxlength="100"></div>
+      <div><label for="bankAlias">Alias</label><input id="bankAlias" maxlength="60"></div>
+      <div><label for="bankAccount">CBU / CVU (22 dígitos)</label><input id="bankAccount" inputmode="numeric" maxlength="22"></div>
+    </div>
+    <fieldset data-pro>
+      <h3 class="space">Personalizar mensajes <span class="badge pro">PRO</span></h3>
+      <label for="formalOpening">Saludo formal</label><textarea id="formalOpening" rows="2" maxlength="700"></textarea>
+      <label for="formalClosing">Cierre formal</label><textarea id="formalClosing" rows="2" maxlength="700"></textarea>
+      <label for="informalOpening">Saludo informal</label><textarea id="informalOpening" rows="2" maxlength="700"></textarea>
+      <label for="informalClosing">Cierre informal</label><textarea id="informalClosing" rows="2" maxlength="700"></textarea>
+      <label for="signature">Firma personalizada</label><input id="signature" maxlength="200">
+      <small>Variables: {cliente}, {negocio}, {validez}. Los importes se agregan automáticamente.</small>
+    </fieldset>
+    <button class="btn primary space">Guardar configuración</button>
+    <small>Demo local. No procesa pagos ni usa una API de IA. Excel y lectura de capturas requieren Internet para cargar sus librerías.</small>
+  </form>
+</div>
+</section>
+</main>
+
+<div id="toast" role="status" hidden></div>
 <div id="printArea"></div>
 
 <script>
 'use strict';
-
-const $ = id => document.getElementById(id);
-const KEY = 'iatencion.v2';
-
-const RUBROS = {
-  repuestos: 'Repuestos y taller',
-  gastronomia: 'Gastronomía',
-  servicios: 'Servicios y clases'
+const $=id=>document.getElementById(id),KEY='iatencion.auto.v1';
+const DEFAULT_MESSAGES={
+  formal:{opening:'Hola, {cliente}. Le enviamos el presupuesto solicitado:',closing:'Quedamos a su disposición para cualquier consulta.'},
+  informal:{opening:'¡Hola, {cliente}! 👋 Te paso el presupuesto:',closing:'¿Te sirve? Escribime y lo coordinamos 😊'}
 };
-
-const NAMES = {
-  repuestos: 'Taller & Repuestos',
-  gastronomia: 'La Cocina',
-  servicios: 'Estudio de Servicios'
-};
-
-const DEMO = {
-  repuestos: [
-    {
-      code: 'REP-001',
-      name: 'Bomba de embrague Hilux',
-      stock: 4,
-      price: 140000,
-      location: 'Estantería B3'
-    },
-    {
-      code: 'REP-002',
-      name: 'Pastillas de freno Corolla',
-      stock: 8,
-      price: 65000,
-      location: 'Estantería A2'
-    },
-    {
-      code: 'REP-003',
-      name: 'Filtro de aceite universal',
-      stock: 12,
-      price: 15000,
-      location: 'Estantería C1'
-    },
-    {
-      code: 'REP-004',
-      name: 'Kit de distribución Gol',
-      stock: 0,
-      price: 95000,
-      location: 'Estantería B1'
-    }
-  ],
-  gastronomia: [
-    {
-      code: 'GAS-001',
-      name: 'Hamburguesa completa',
-      stock: 20,
-      price: 8500,
-      location: 'Cocina'
-    },
-    {
-      code: 'GAS-002',
-      name: 'Pizza muzzarella',
-      stock: 12,
-      price: 12000,
-      location: 'Cocina'
-    },
-    {
-      code: 'GAS-003',
-      name: 'Empanadas por docena',
-      stock: 0,
-      price: 15000,
-      location: 'Cocina'
-    }
-  ],
-  servicios: [
-    {
-      code: 'SER-001',
-      name: 'Clase de guitarra · 1 hora',
-      stock: 6,
-      price: 15000,
-      location: 'Estudio'
-    },
-    {
-      code: 'SER-002',
-      name: 'Asesoría · 1 hora',
-      stock: 4,
-      price: 25000,
-      location: 'Online'
-    }
-  ]
-};
-
-const fresh = () => ({
-  sector: 'repuestos',
-  business: NAMES.repuestos,
-  discount: 10,
-  tone: 'formal',
-  validityDays: 7,
-  signature: '',
-  messages: {
-    formal: {
-      opening: 'Hola, {cliente}. Gracias por contactarnos. Le enviamos el presupuesto solicitado:',
-      closing: 'Quedamos a su disposición para responder consultas y coordinar su pedido.'
-    },
-    informal: {
-      opening: '¡Hola, {cliente}! 👋 ¿Cómo va? Te paso el presupuesto:',
-      closing: '¿Te sirve? Escribime y lo coordinamos 😊'
-    }
-  },
-  bank: {
-    holder: '',
-    name: '',
-    alias: '',
-    account: ''
-  },
-  appointments: [],
-  inventories: JSON.parse(JSON.stringify(DEMO)),
-  sources: {},
-  onboarded: false
+const initial=()=>({
+  business:'Repuestos y Taller',discount:10,validityDays:7,tone:'formal',signature:'',
+  messages:structuredClone(DEFAULT_MESSAGES),bank:{holder:'',name:'',alias:'',account:''},
+  stock:[
+    {code:'REP-001',name:'Bomba de embrague Hilux',stock:4,price:140000,location:'B3'},
+    {code:'REP-002',name:'Pastillas de freno Corolla',stock:8,price:65000,location:'A2'},
+    {code:'REP-003',name:'Filtro de aceite',stock:0,price:15000,location:'C1'}
+  ],appointments:[]
 });
+let state=initial(),pro=false,quote=null,dirty=false,book=null,pending=[],editing=null,appointmentId=null,imageFile=null,imageURL='',imageToken=0,ocrBusy=false;
 
-let editingAppointment = null;
-let appointmentMessageId = null;
-let messageDraft = null;
+// Recuperar datos actuales o migrar los repuestos de la versión anterior.
+try{
+  const saved=JSON.parse(localStorage.getItem(KEY)||'null'),old=JSON.parse(localStorage.getItem('iatencion.v2')||'null');
+  if(saved)state={...initial(),...saved};
+  else if(old)state={...initial(),business:old.business||'Repuestos y Taller',discount:old.discount??10,validityDays:old.validityDays||7,tone:old.tone==='informal'?'informal':'formal',signature:old.signature||'',messages:old.messages||structuredClone(DEFAULT_MESSAGES),bank:old.bank||initial().bank,stock:old.inventories?.repuestos||initial().stock,appointments:(old.appointments||[]).filter(a=>a.sector==='repuestos')};
+}catch{}
 
-let state = fresh();
-let plan = 'gratis';
-let quote = null;
-let dirty = false;
-let pendingRows = [];
-let workbook = null;
-let importing = false;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+const money=n=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:2}).format(n);
+const cent=n=>Math.round((n+Number.EPSILON)*100);
+const localDate=d=>{d=new Date(d);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}T${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
+const dateText=d=>new Date(d).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
 
-function validProduct(p) {
-  return p &&
-    typeof p.code === 'string' &&
-    p.code.length > 0 &&
-    typeof p.name === 'string' &&
-    p.name.length > 0 &&
-    Number.isSafeInteger(p.stock) &&
-    p.stock >= 0 &&
-    p.stock <= 1000000 &&
-    Number.isFinite(p.price) &&
-    p.price >= 0 &&
-    p.price <= 1000000000 &&
-    typeof p.location === 'string';
-}
-
-try {
-  const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
-
-  if (
-    saved &&
-    RUBROS[saved.sector] &&
-    typeof saved.business === 'string' &&
-    Number.isFinite(saved.discount) &&
-    saved.discount >= 0 &&
-    saved.discount <= 100 &&
-    ['cercano', 'informal', 'formal', 'muyformal'].includes(saved.tone) &&
-    Object.keys(DEMO).every(
-      k => Array.isArray(saved.inventories?.[k]) &&
-      saved.inventories[k].every(validProduct)
-    )
-  ) {
-    state = { ...fresh(), ...saved };
-  }
-} catch (e) {}
-
-state.tone = ['formal', 'muyformal'].includes(state.tone) ? 'formal' : 'informal';
-state.messages = { ...fresh().messages, ...state.messages };
-state.bank = { ...fresh().bank, ...state.bank };
-state.appointments = Array.isArray(state.appointments) ? state.appointments : [];
-messageDraft = JSON.parse(JSON.stringify(state.messages));
-
-/* UTILIDADES */
-
-function toast(text) {
-  $('toast').textContent = text;
-  $('toast').classList.remove('hidden');
-  clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => $('toast').classList.add('hidden'), 4500);
-}
-
-function persist(next = state) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next));
-    return true;
-  } catch (e) {
-    toast('No se pudo guardar en este navegador. Permití almacenamiento local y volvé a intentar.');
-    return false;
-  }
-}
-
-function esc(text) {
-  return String(text).replace(/[&<>"']/g, c => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[c]));
-}
-
-function money(value) {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(value);
-}
-
-function cents(n) {
-  return Math.round((n + Number.EPSILON) * 100);
-}
-
-function norm(s) {
-  return String(s)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
-
-function localDateTime(date) {
-  const d = new Date(date);
-
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-}
-
-function formatDateTime(value) {
-  return new Date(value).toLocaleString('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23'
-  });
-}
-
-function readNumber(id, min, max, integer = false) {
-  const el = $(id);
-  const v = Number(el.value);
-
-  if (
-    el.value.trim() === '' ||
-    !Number.isFinite(v) ||
-    v < min ||
-    v > max ||
-    (integer && !Number.isInteger(v))
-  ) {
-    const name = document.querySelector(`label[for="${id}"]`)?.textContent || id;
-    throw new Error(
-      name + `: ingresá ${integer ? 'un número entero' : 'un número'} entre ${min} y ${max}.`
-    );
-  }
-
+function toast(s){$('toast').textContent=s;$('toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').hidden=true,5000)}
+function guard(fn){try{fn()}catch(e){toast(e.message)}}
+function save(next){try{localStorage.setItem(KEY,JSON.stringify(next));state=next;return true}catch{toast('No se pudo guardar. Permití almacenamiento local en el navegador.');return false}}
+function requirePro(){if(pro)return true;toast('Esta herramienta es PRO. Activá “Probar PRO demo” para probarla.');return false}
+function number(id,min,max,integer=false){
+  const v=Number($(id).value);
+  if($(id).value.trim()===''||!Number.isFinite(v)||v<min||v>max||(integer&&!Number.isInteger(v)))throw Error(`Revisá ${document.querySelector(`label[for="${id}"]`)?.textContent||id}: valor entre ${min} y ${max}.`);
   return v;
 }
-
-function showView(view) {
-  for (const el of document.querySelectorAll('[id^="view-"]')) {
-    el.classList.toggle('hidden', el.id !== 'view-' + view);
-  }
-
-  for (const b of document.querySelectorAll('[data-view]')) {
-    b.classList.toggle('active', b.dataset.view === view);
-
-    if (b.dataset.view === view) {
-      b.setAttribute('aria-current', 'page');
-    } else {
-      b.removeAttribute('aria-current');
-    }
-  }
-
-  const headings = {
-    ventas: [
-      'Tu mostrador inteligente',
-      'De la consulta al presupuesto, en segundos.'
-    ],
-    stock: [
-      'Stock e inventario',
-      'Cada producto, precio y disponibilidad en su lugar.'
-    ],
-    turnos: [
-      'Turnos y reservas',
-      'Organizá tu agenda y prepará la confirmación para tu cliente.'
-    ],
-    ajustes: [
-      'A tu manera',
-      'Configurá las condiciones y la voz de tu negocio.'
-    ]
-  };
-
-  $('pageTitle').textContent = headings[view][0];
-  $('pageSubtitle').textContent = headings[view][1];
+function dirtyQuote(){if(quote){dirty=true;$('stale').hidden=false;['send','copy','pdf'].forEach(id=>$(id).disabled=true)}}
+function tab(name){document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==name);document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('active',el.dataset.tab===name))}
+function setPlan(){
+  pro=!pro;$('planBadge').textContent=pro?'PRO demo':'Plan Gratis';$('switchPlan').textContent=pro?'Volver a Gratis':'Probar PRO demo';
+  document.querySelectorAll('[data-pro]').forEach(el=>el.disabled=!pro);
+  $('agendaLock').hidden=pro;$('agendaContent').hidden=!pro;dirtyQuote();renderTotals();renderAgenda();
+}
+function phone(raw){
+  const t=raw.trim(),d=t.replace(/\D/g,'');
+  if(!/^[+\d\s().-]+$/.test(t))throw Error('Ingresá un teléfono válido.');
+  if(t.startsWith('+')&&/^[1-9]\d{7,14}$/.test(d))return d;
+  if(/^549\d{10}$/.test(d))return d;
+  if(/^[1-9]\d{9}$/.test(d))return '549'+d;
+  throw Error('Usá 10 dígitos sin 0 ni 15, o número internacional con +.');
+}
+function whatsapp(t,text){window.open(`https://wa.me/${phone(t)}?text=${encodeURIComponent(text)}`,'_blank','noopener,noreferrer')}
+async function copy(text,id){
+  try{await navigator.clipboard.writeText(text);toast('Texto copiado.')}
+  catch{const r=document.createRange();r.selectNodeContents($(id));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Texto seleccionado: copiá con Ctrl+C o ⌘C.')}
 }
 
-function markDirty() {
-  if (quote) {
-    dirty = true;
-    $('stale').classList.remove('hidden');
-
-    for (const id of ['whatsapp', 'copy', 'print']) {
-      $(id).disabled = true;
-    }
-  }
+// STOCK Y CÁLCULOS
+function product(){return state.stock.find(p=>p.code===$('product').value)}
+function renderStock(){
+  const previous=$('product').value,rows=state.stock.filter(p=>norm(p.code+' '+p.name+' '+p.location).includes(norm($('search').value)));
+  $('stockCount').textContent=state.stock.length+' productos';
+  $('stockRows').innerHTML=rows.slice(0,100).map(p=>`<tr><td>${esc(p.code)}</td><td>${esc(p.name)}</td><td>${p.stock}</td><td>${money(p.price)}</td><td>${esc(p.location)}</td><td><div class="row"><button class="btn mini" data-edit="${esc(p.code)}">Editar</button><button class="btn mini" data-quote="${esc(p.code)}" ${p.stock?'':'disabled'}>Cotizar</button></div></td></tr>`).join('')||'<tr><td colspan="6">Sin resultados.</td></tr>';
+  $('product').innerHTML='<option value="">Presupuesto manual / servicio de taller</option>'+state.stock.map(p=>`<option value="${esc(p.code)}">${esc(p.code+' · '+p.name)} (${p.stock})</option>`).join('');
+  if(state.stock.some(p=>p.code===previous))$('product').value=previous;
+  setProduct(false);
+}
+function setProduct(change=true){
+  const p=product();$('amount').readOnly=!!p;
+  if(p)$('amount').value=(cent(p.price)*Number($('quantity').value||1)/100).toFixed(2);
+  $('availability').textContent=p?`${p.stock} unidades disponibles · ${p.location||'Sin ubicación'}`:'Sin producto seleccionado: disponibilidad a confirmar.';
+  if(change)dirtyQuote();renderTotals();
+}
+function calculate(a,shipping,discount,vat,n,rate){
+  const base=cent(a),delivery=cent(shipping),list=base+delivery,cash=list-Math.round(base*discount/100),target=list+Math.round(list*rate/100),each=n?Math.round(target/n):0,financed=n?each*n:list;
+  return{base,delivery,list,cash,net:vat?Math.round(base/(1+vat/100)):base,vat,discount,n,rate,each,financed,rounding:n?financed-target:0};
+}
+function calculation(){
+  const offer=pro&&$('offerInstallments').checked;
+  return calculate(number('amount',0,1e9),number('shippingCost',0,1e6),number('discount',0,100),Number($('vat').value),offer?number('installments',2,60,true):0,offer?number('surcharge',0,500):0);
+}
+const installment=c=>`${c.n} cuotas de ${money(c.each/100)} cada una`;
+function renderTotals(){
+  try{
+    const c=calculation();
+    $('totals').innerHTML=`<div class="row"><span>${c.vat?'Neto / IVA incluido':'IVA sin discriminar'}</span><span>${c.vat?money(c.net/100)+' / '+money((c.base-c.net)/100):'—'}</span></div><div class="row"><span>Productos / servicio</span><b>${money(c.base/100)}</b></div><div class="row"><span>Envío</span><b>${money(c.delivery/100)}</b></div><div class="row total"><span>Total de lista</span><b>${money(c.list/100)}</b></div><div class="row ok"><span>Efectivo / transferencia (${c.discount}% OFF)</span><b>${money(c.cash/100)}</b></div>${c.n?`<p class="space"><b>${installment(c)}</b></p><small>${c.rate?'Recargo total '+c.rate+'%':'Sin interés'} · Total financiado: ${money(c.financed/100)}</small>${c.rounding?'<small>Total ajustado al redondeo de cuotas iguales.</small>':''}`:''}`;
+  }catch(e){$('totals').textContent=e.message}
 }
 
-/* INVENTARIO */
-
-function catalog() {
-  return state.inventories[state.sector];
+// PRESUPUESTOS Y TRANSFERENCIAS
+function bankText(){
+  const b=state.bank;
+  if(!b.holder||!(b.alias||b.account))throw Error('Guardá titular y alias o CBU/CVU en Configuración.');
+  return ['Datos para transferencia',`Titular: ${b.holder}`,...(b.name?[`Banco / billetera: ${b.name}`]:[]),...(b.alias?[`Alias: ${b.alias}`]:[]),...(b.account?[`CBU / CVU: ${b.account}`]:[])].join('\n');
 }
-
-function selected() {
-  return catalog().find(p => p.code === $('product').value);
-}
-
-function renderStock() {
-  const search = norm($('search').value);
-  const products = catalog().filter(
-    p => norm(p.code + ' ' + p.name + ' ' + p.location).includes(search)
-  );
-
-  $('inventory').innerHTML = products.slice(0, 150).map(p => `
-    <tr>
-      <td class="muted">${esc(p.code)}</td>
-      <td><b>${esc(p.name)}</b></td>
-      <td>
-        <span class="${p.stock ? 'success' : 'error'}">
-          ${p.stock ? p.stock + ' disponibles' : 'Sin stock'}
-        </span>
-      </td>
-      <td>${money(p.price)}</td>
-      <td class="muted">${esc(p.location || '—')}</td>
-      <td>
-        <button class="btn small" data-product="${esc(p.code)}" ${p.stock ? '' : 'disabled'}>
-          Cotizar ↗
-        </button>
-      </td>
-    </tr>
-  `).join('') || `
-    <tr>
-      <td colspan="6" class="muted">No hay productos que coincidan con tu búsqueda.</td>
-    </tr>
-  `;
-
-  $('countProducts').textContent = catalog().length;
-  $('countUnits').textContent = catalog()
-    .reduce((n, p) => n + p.stock, 0)
-    .toLocaleString('es-AR');
-
-  $('countEmpty').textContent = catalog().filter(p => !p.stock).length;
-  $('stockSource').textContent = state.sources[state.sector] || 'Catálogo demo';
-
-  $('stockCount').textContent =
-    `${products.length} resultados${products.length > 150 ? ' · Se muestran los primeros 150; refiná la búsqueda.' : ''}`;
-
-  const previous = $('product').value;
-
-  $('product').innerHTML =
-    '<option value="">Presupuesto manual · sin producto seleccionado</option>' +
-    catalog().map(p => `
-      <option value="${esc(p.code)}">
-        ${esc(p.code + ' · ' + p.name)} (${p.stock} disponibles)
-      </option>
-    `).join('');
-
-  if (catalog().some(p => p.code === previous)) {
-    $('product').value = previous;
-  }
-
-  availability();
-}
-
-function availability() {
-  const p = selected();
-
-  $('availability').textContent = p
-    ? `${p.stock} disponibles${p.location ? ' · ' + p.location : ''}${state.sector === 'servicios' ? ' · Disponibilidad cargada, horario a confirmar' : ''}`
-    : 'Sin producto seleccionado. Disponibilidad a confirmar.';
-
-  $('availability').className =
-    'hint ' + (p ? (p.stock ? 'success' : 'error') : '');
-}
-
-function selectProduct() {
-  const p = selected();
-
-  if (p) {
-    $('amount').value =
-      (cents(p.price) * Number($('quantity').value || 1) / 100).toFixed(2);
-
-    if (!$('query').value.trim()) {
-      $('query').value = 'Consulta por ' + p.name;
-    }
-  }
-
-  $('amount').readOnly = !!p;
-  availability();
-  markDirty();
-  renderCalculation();
-}
-
-/* CÁLCULOS
-   Se trabaja en centavos.
-   Descuento: solo productos.
-   Recargo: total de lista más envío.
-   Todas las cuotas tienen el mismo importe.
-*/
-
-function calculate(input) {
-  const base = cents(input.amount);
-  const shipping = cents(input.shipping);
-  const discount = Math.round(base * input.discount / 100);
-  const list = base + shipping;
-  const cash = base - discount + shipping;
-
-  const fee = input.offer
-    ? Math.round(list * input.surcharge / 100)
-    : 0;
-
-  const target = list + fee;
-  const each = input.offer
-    ? Math.round(target / input.installments)
-    : 0;
-
-  const financed = input.offer
-    ? each * input.installments
-    : target;
-
-  const net = input.vat
-    ? Math.round(base / (1 + input.vat / 100))
-    : base;
-
-  return {
-    ...input,
-    list,
-    cash,
-    fee,
-    financed,
-    each,
-    last: each,
-    rounding: financed - target,
-    net,
-    baseCents: base,
-    shippingCents: shipping,
-    discountCents: discount
-  };
-}
-
-function readCalculation() {
-  return calculate({
-    amount: readNumber('amount', 0, 1000000000000),
-    shipping: readNumber('shippingCost', 0, 10000000),
-    discount: readNumber('discount', 0, 100),
-    vat: Number($('vat').value),
-    offer: $('offerInstallments').checked,
-    installments: $('offerInstallments').checked
-      ? readNumber('installments', 2, 60, true)
-      : 3,
-    surcharge: $('offerInstallments').checked
-      ? readNumber('surcharge', 0, 500)
-      : 0
-  });
-}
-
-function installmentText(c) {
-  return `${c.installments} cuotas de ${money(c.each / 100)} cada una`;
-}
-
-function totalsHtml(c) {
-  return `
-    ${c.vat ? `
-      <div class="row muted">
-        <span>Neto / IVA incluido (${c.vat}%)</span>
-        <span>${money(c.net / 100)} / ${money((c.baseCents - c.net) / 100)}</span>
-      </div>
-    ` : `
-      <div class="row muted">
-        <span>IVA</span>
-        <span>Sin discriminar</span>
-      </div>
-    `}
-    <div class="row">
-      <span>Productos / servicio</span>
-      <strong>${money(c.baseCents / 100)}</strong>
-    </div>
-    <div class="row">
-      <span>Envío</span>
-      <strong>${money(c.shippingCents / 100)}</strong>
-    </div>
-    <div class="row total">
-      <span>Total de lista</span>
-      <strong>${money(c.list / 100)}</strong>
-    </div>
-    <div class="row success">
-      <span>Efectivo / transferencia${c.discount ? ' (−' + c.discount + '%)' : ''}</span>
-      <strong>${money(c.cash / 100)}</strong>
-    </div>
-    ${c.offer ? `
-      <div style="border-top:1px solid #304057;padding-top:10px">
-        <strong>${installmentText(c)}</strong>
-        <p class="hint">
-          ${c.surcharge ? 'Recargo total: ' + c.surcharge + '%' : 'Sin interés'}
-          · Total financiado: ${money(c.financed / 100)}
-        </p>
-        ${c.rounding ? '<p class="hint">Total ajustado al redondeo de cuotas iguales.</p>' : ''}
-      </div>
-    ` : ''}
-  `;
-}
-
-function renderCalculation() {
-  try {
-    $('totals').innerHTML = totalsHtml(readCalculation());
-    $('totals').classList.remove('hidden');
-    $('calcError').classList.add('hidden');
-    return true;
-  } catch (e) {
-    $('calcError').textContent = e.message;
-    $('calcError').classList.remove('hidden');
-    $('totals').classList.add('hidden');
-    return false;
-  }
-}
-
-/* MENSAJES Y PRESUPUESTO */
-
-function fillTemplate(text, client, validity) {
-  return text.replace(
-    /\{(cliente|negocio|validez)\}/g,
-    (_, key) => ({
-      cliente: client,
-      negocio: state.business,
-      validez: validity
-    }[key])
-  );
-}
-
-function tonePreview() {
-  const m = state.messages[$('tone').value];
-  $('tonePreview').textContent =
-    fillTemplate(m.opening, 'Lucas', 'la fecha indicada');
-}
-
-function delivery() {
-  return {
-    mostrador: 'Retiro en mostrador',
-    moto: 'Envío local / cadete',
-    correo: 'Despacho por correo / encomienda'
-  }[$('shipping').value];
-}
-
-function generate() {
-  try {
-    $('generateError').textContent = '';
-
-    const client = $('client').value.trim();
-    const query = $('query').value.trim();
-
-    if (!client) throw Error('Ingresá el nombre del cliente.');
-    if (!query) throw Error('Ingresá la consulta o el detalle del pedido.');
-
-    const expires = new Date($('validUntil').value);
-
-    if (!Number.isFinite(expires.getTime()) || expires <= new Date()) {
-      throw Error('La validez de la oferta debe ser una fecha y hora futura.');
-    }
-
-    const c = readCalculation();
-    const quantity = readNumber('quantity', 1, 100000, true);
-    const p = selected();
-
-    if (p && quantity > p.stock) {
-      throw Error(`Stock insuficiente: hay ${p.stock} unidades de ${p.name}.`);
-    }
-
-    const detail = p ? `${quantity} × ${p.name}` : query;
-    const stock = p
-      ? `${p.stock} unidades disponibles al cotizar`
-      : 'Disponibilidad a confirmar';
-
-    const appointment = state.appointments.find(
-      a => a.id === $('quoteAppointment').value
-    );
-
-    if (
-      appointment &&
-      (!isActive(appointment) || new Date(appointment.start) <= new Date())
-    ) {
-      throw Error('El turno asociado ya no está disponible. Elegí otro turno.');
-    }
-
-    if (appointment && norm(appointment.client) !== norm(client)) {
-      throw Error('El turno pertenece a otro cliente. Revisá el nombre o quitá el turno asociado.');
-    }
-
-    const validity = formatDateTime(expires);
-    const tone = state.messages[$('tone').value];
-    const bank = $('includeTransfer').checked ? transferText() : '';
-    const note = $('quoteNote').value.trim();
-    const signature = state.signature || state.business;
-    const appointmentText = appointment ? appointmentSummary(appointment) : '';
-
-    const text = [
-      fillTemplate(tone.opening, client, validity),
-      '',
-      `Detalle: ${detail}`,
-      `Disponibilidad: ${stock}`,
-      `Productos / servicio: ${money(c.baseCents / 100)}`,
-      `Entrega: ${delivery()}`,
-      `Costo de envío: ${money(c.shippingCents / 100)}`,
-      `Total de lista: ${money(c.list / 100)}`,
-      `Efectivo / transferencia${c.discount ? ` (${c.discount}% de descuento en productos)` : ''}: ${money(c.cash / 100)}`,
-      ...(c.offer ? [
-        `${installmentText(c)} · ${c.surcharge ? `recargo total ${c.surcharge}%` : 'sin interés'}`,
-        `Total financiado, envío incluido: ${money(c.financed / 100)}`
-      ] : []),
-      '',
-      `Oferta válida hasta: ${validity}`,
-      ...(appointmentText ? ['', appointmentText] : []),
-      ...(bank ? ['', bank] : []),
-      ...(note ? ['', note] : []),
-      '',
-      'Presupuesto sujeto a confirmación de disponibilidad y plazo de entrega.',
-      fillTemplate(tone.closing, client, validity),
-      signature
+function generate(){
+  try{
+    $('error').textContent='';
+    const client=$('client').value.trim(),query=$('query').value.trim(),expiry=new Date($('validUntil').value),p=product(),qty=number('quantity',1,100000,true),c=calculation();
+    if(!client||!query)throw Error('Completá el cliente y la consulta.');
+    if(!Number.isFinite(+expiry)||expiry<=new Date())throw Error('La validez debe ser una fecha y hora futura.');
+    if(p&&qty>p.stock)throw Error(`Stock insuficiente: hay ${p.stock} unidades.`);
+    const a=pro?state.appointments.find(a=>a.id===$('quoteAppointment').value):null;
+    if(a&&(!active(a)||new Date(a.start)<=new Date()||norm(a.client)!==norm(client)))throw Error('El turno debe ser futuro, activo y del mismo cliente.');
+    const validity=dateText(expiry),m=(pro?state.messages:DEFAULT_MESSAGES)[$('tone').value],fill=s=>s.replace(/\{(cliente|negocio|validez)\}/g,(_,k)=>({cliente:client,negocio:state.business,validez:validity}[k])),detail=p?`${qty} × ${p.name}`:query,delivery=$('shipping').selectedOptions[0].textContent;
+    const text=[
+      fill(m.opening),'',`Detalle: ${detail}`,`Disponibilidad: ${p?p.stock+' unidades al cotizar':'a confirmar'}`,
+      `Productos / servicio: ${money(c.base/100)}`,`Entrega: ${delivery} (${money(c.delivery/100)})`,
+      `Total de lista: ${money(c.list/100)}`,`Efectivo / transferencia (${c.discount}% OFF en productos): ${money(c.cash/100)}`,
+      ...(c.n?[`${installment(c)} · ${c.rate?'recargo total '+c.rate+'%':'sin interés'}`,`Total financiado: ${money(c.financed/100)}`]:[]),
+      '',`Oferta válida hasta: ${validity}`,
+      ...(a?['',`Turno ${a.status}: ${dateText(a.start)} · ${a.duration} min`,`Trabajo: ${a.service} · Puesto: ${a.resource}`]:[]),
+      ...($('includeTransfer').checked?['',bankText()]:[]),
+      ...($('note').value.trim()?['',$('note').value.trim()]:[]),
+      '','Disponibilidad y plazo de entrega sujetos a confirmación.',fill(m.closing),pro&&state.signature?state.signature:state.business
     ].join('\n');
-
-    quote = {
-      client,
-      phone: $('phone').value.trim(),
-      query,
-      detail,
-      stock,
-      delivery: delivery(),
-      c,
-      text,
-      business: state.business,
-      date: new Date().toLocaleDateString('es-AR'),
-      id: 'P-' + Date.now().toString().slice(-8),
-      expires: expires.toISOString(),
-      validity,
-      bank,
-      note,
-      appointmentText,
-      appointmentId: appointment?.id || null
-    };
-
-    dirty = false;
-    $('empty').classList.add('hidden');
-    $('result').classList.remove('hidden');
-    $('stale').classList.add('hidden');
-
-    for (const id of ['whatsapp', 'copy', 'print']) {
-      $(id).disabled = false;
-    }
-
-    $('order').textContent =
-      `Cliente: ${client}\n` +
-      `Pedido: ${detail}\n` +
-      `Consulta: ${query}\n` +
-      `Entrega: ${quote.delivery}\n` +
-      `Lista: ${money(c.list / 100)} · Efectivo: ${money(c.cash / 100)}\n` +
-      `${stock}\n` +
-      `Validez: ${validity}` +
-      (appointmentText ? '\n' + appointmentText : '');
-
-    $('message').textContent = text;
-    renderPdf();
-    toast('Respuesta lista. Revisala antes de enviar.');
-  } catch (e) {
-    $('generateError').textContent = e.message;
-  }
+    quote={text,phone:$('phone').value,expiry:+expiry,appointmentId:a?.id,business:state.business};
+    dirty=false;$('empty').hidden=true;$('result').hidden=false;$('stale').hidden=true;
+    ['send','copy'].forEach(id=>$(id).disabled=false);$('pdf').disabled=!pro;$('message').textContent=text;
+    $('order').textContent=`Cliente: ${client}\nConsulta: ${query}\nPedido: ${detail}\nEntrega: ${delivery}\nLista: ${money(c.list/100)} · Efectivo: ${money(c.cash/100)}`;
+    toast('Respuesta lista para revisar.');
+  }catch(e){$('error').textContent=e.message}
 }
-
-function renderPdf() {
-  if (!quote) return;
-  const q = quote;
-
-  const html = `
-    <div class="paper">
-      <div class="row between">
-        <h2>${esc(q.business)}</h2>
-        <span style="color:#e05e00;font-weight:900">IA</span>
-      </div>
-      <small>Presupuesto ${q.id} · ${q.date}</small>
-      <hr>
-      <p><b>Cliente:</b> ${esc(q.client)}</p>
-      <p><b>Detalle:</b> ${esc(q.detail)}</p>
-      <p><b>Entrega:</b> ${esc(q.delivery)}</p>
-      <p><b>Oferta válida hasta:</b> ${esc(q.validity)}</p>
-      ${q.appointmentText ? `
-        <p style="white-space:pre-wrap">${esc(q.appointmentText)}</p>
-      ` : ''}
-      <hr>
-      <div class="summary">${totalsHtml(q.c)}</div>
-      ${q.bank ? `
-        <p class="space" style="white-space:pre-wrap">${esc(q.bank)}</p>
-      ` : ''}
-      ${q.note ? `<p class="space">${esc(q.note)}</p>` : ''}
-      <hr>
-      <small>
-        Presupuesto comercial. No válido como factura.
-        Disponibilidad y plazo de entrega a confirmar.
-        Las opciones de pago son alternativas y no se acumulan.
-      </small>
-    </div>
-  `;
-
-  $('pdfPreview').innerHTML = html;
-  $('printArea').innerHTML = html;
-}
-
-function setPlan(value) {
-  plan = value;
-
-  for (const [id, key] of [['freePlan', 'gratis'], ['proPlan', 'pro']]) {
-    $(id).classList.toggle('active', key === plan);
-    $(id).setAttribute('aria-pressed', String(key === plan));
-  }
-
-  $('planBadge').textContent = plan === 'pro' ? '♛ Pro demo' : 'Plan Gratis';
-  $('pdfPanel').classList.toggle('hidden', plan !== 'pro');
-  $('proHint').classList.toggle('hidden', plan === 'pro');
-}
-
-function normalizePhone(raw) {
-  const t = raw.trim();
-
-  if (!/^[+\d\s().-]+$/.test(t)) {
-    throw Error('Ingresá un teléfono válido.');
-  }
-
-  const digits = t.replace(/\D/g, '');
-
-  if (t.startsWith('+')) {
-    if (digits.length < 8 || digits.length > 15 || digits[0] === '0') {
-      throw Error('Revisá el número internacional.');
-    }
-    return digits;
-  }
-
-  if (/^549\d{10}$/.test(digits)) return digits;
-
-  if (/^\d{10}$/.test(digits) && digits[0] !== '0') {
-    return '549' + digits;
-  }
-
-  throw Error('Usá 10 dígitos con código de área, sin 0 ni 15, o un número internacional con +.');
-}
-
-function ensureFresh() {
-  if (quote?.appointmentId) {
-    const a = state.appointments.find(a => a.id === quote.appointmentId);
-
-    if (!a || !isActive(a) || new Date(a.start) <= new Date()) {
-      markDirty();
-      toast('Revisá el turno asociado y generá nuevamente el presupuesto.');
-      return false;
-    }
-  }
-
-  if (quote && new Date(quote.expires) <= new Date()) {
-    markDirty();
-    toast('La oferta venció. Actualizá la validez y generá un nuevo presupuesto.');
-    return false;
-  }
-
-  if (!quote || dirty) {
-    toast('Generá nuevamente la respuesta antes de continuar.');
-    return false;
-  }
-
+function freshQuote(){
+  if(!quote||dirty){toast('Generá nuevamente la respuesta.');return false}
+  const a=quote.appointmentId?state.appointments.find(a=>a.id===quote.appointmentId):null;
+  if(quote.expiry<=Date.now()||(quote.appointmentId&&(!a||!active(a)||new Date(a.start)<=new Date()))){dirtyQuote();toast('La oferta o el turno venció. Actualizá el presupuesto.');return false}
   return true;
 }
 
-/* IMPORTACIÓN EXCEL
-   Ninguna fila se guarda si se detectan errores.
-*/
-
-function parseNumberCell(v) {
-  if (typeof v === 'number') return v;
-
-  let s = String(v ?? '').trim().replace(/\$/g, '').replace(/\s/g, '');
-  if (!s) return NaN;
-
-  if (s.includes(',')) {
-    if (!/^-?(?:\d+|\d{1,3}(?:\.\d{3})+),\d{1,2}$/.test(s)) {
-      return NaN;
-    }
-    s = s.replace(/\./g, '').replace(',', '.');
-  } else if (/^-?\d{1,3}(?:\.\d{3})+$/.test(s)) {
-    s = s.replace(/\./g, '');
-  } else if (!/^-?\d+(?:\.\d{1,2})?$/.test(s)) {
-    return NaN;
-  }
-
-  return Number(s);
+// CONFIGURACIÓN
+function settings(){
+  const map={business:state.business,defaultDiscount:state.discount,validityDays:state.validityDays,defaultTone:state.tone,discount:state.discount,tone:state.tone,signature:state.signature,bankHolder:state.bank.holder,bankName:state.bank.name,bankAlias:state.bank.alias,bankAccount:state.bank.account,formalOpening:state.messages.formal.opening,formalClosing:state.messages.formal.closing,informalOpening:state.messages.informal.opening,informalClosing:state.messages.informal.closing};
+  Object.entries(map).forEach(([k,v])=>$(k).value=v);
+  const d=new Date();d.setDate(d.getDate()+state.validityDays);$('validUntil').value=localDate(d);
+  try{$('transferPreview').textContent=bankText()}catch(e){$('transferPreview').textContent=e.message}
+  renderTotals();
 }
-
-function parseRows(rows) {
-  if (rows.length < 2) {
-    throw Error('La hoja debe tener encabezados y al menos un producto.');
-  }
-
-  if (rows.length > 5001) {
-    throw Error('La hoja supera las 5.000 filas.');
-  }
-
-  const aliases = {
-    codigo: ['codigo', 'sku', 'code'],
-    producto: ['producto', 'nombre', 'descripcion'],
-    stock: ['stock', 'cantidad', 'existencias'],
-    precio: ['precio', 'precio de lista', 'price'],
-    ubicacion: ['ubicacion', 'estanteria', 'location']
-  };
-
-  const headers = rows[0].map(h => norm(h));
-  const indexes = {};
-
-  for (const [key, names] of Object.entries(aliases)) {
-    const found = headers
-      .map((h, i) => names.includes(h) ? i : -1)
-      .filter(i => i >= 0);
-
-    if (found.length > 1) {
-      throw Error(`Hay más de una columna para ${key}.`);
-    }
-
-    indexes[key] = found[0] ?? -1;
-
-    if (key !== 'ubicacion' && indexes[key] < 0) {
-      throw Error('Falta la columna ' + key + '. Usá la plantilla de ejemplo.');
-    }
-  }
-
-  const result = [];
-  const errors = [];
-  const seen = new Set();
-
-  rows.slice(1).forEach((row, i) => {
-    if (row.every(v => v == null || String(v).trim() === '')) return;
-
-    const text = k => String(row[indexes[k]] ?? '').trim();
-    const code = text('codigo');
-    const name = text('producto');
-    const stock = parseNumberCell(row[indexes.stock]);
-    const price = parseNumberCell(row[indexes.precio]);
-    const location = indexes.ubicacion < 0 ? '' : text('ubicacion');
-
-    if (
-      !code ||
-      code.length > 80 ||
-      !name ||
-      name.length > 200 ||
-      location.length > 150
-    ) {
-      errors.push(`Fila ${i + 2}: código o producto vacío, o texto demasiado largo.`);
-      return;
-    }
-
-    if (
-      !Number.isSafeInteger(stock) ||
-      stock < 0 ||
-      stock > 1000000 ||
-      !Number.isFinite(price) ||
-      price < 0 ||
-      price > 1000000000
-    ) {
-      errors.push(`Fila ${i + 2}: stock entero y precio no negativos son obligatorios.`);
-      return;
-    }
-
-    if (seen.has(norm(code))) {
-      errors.push(`Fila ${i + 2}: código duplicado (${code}).`);
-      return;
-    }
-
-    seen.add(norm(code));
-    result.push({
-      code,
-      name,
-      stock,
-      price: cents(price) / 100,
-      location
-    });
+function saveSettings(e){
+  e.preventDefault();guard(()=>{
+    const bank={holder:$('bankHolder').value.trim(),name:$('bankName').value.trim(),alias:$('bankAlias').value.trim(),account:$('bankAccount').value.trim()};
+    if(bank.account&&!/^\d{22}$/.test(bank.account))throw Error('CBU/CVU: debe tener 22 dígitos.');
+    if((bank.alias||bank.account)&&!bank.holder)throw Error('Falta el titular de la cuenta.');
+    const business=$('business').value.trim();if(!business)throw Error('Ingresá el nombre comercial.');
+    const messages=pro?{formal:{opening:$('formalOpening').value.trim(),closing:$('formalClosing').value.trim()},informal:{opening:$('informalOpening').value.trim(),closing:$('informalClosing').value.trim()}}:state.messages;
+    if(Object.values(messages).some(m=>!m.opening||!m.closing))throw Error('Completá los saludos y cierres.');
+    if(save({...state,business,bank,messages,signature:pro?$('signature').value.trim():state.signature,discount:number('defaultDiscount',0,100),validityDays:number('validityDays',1,90,true),tone:$('defaultTone').value})){dirtyQuote();settings();renderAgenda();toast('Configuración guardada.')}
   });
-
-  if (errors.length) {
-    throw Error(
-      errors.slice(0, 5).join(' ') +
-      (errors.length > 5 ? ` Hay ${errors.length} errores en total.` : '')
-    );
-  }
-
-  if (!result.length) {
-    throw Error('No hay productos válidos para importar.');
-  }
-
-  return result;
 }
 
-function requireXlsx() {
-  if (!window.XLSX) {
-    toast('No se pudo cargar el lector de Excel. Revisá tu conexión a Internet y recargá la página.');
-    return false;
-  }
+// EXCEL
+function excelReady(){
+  if(!requirePro())return false;
+  if(!window.XLSX){toast('El lector Excel no cargó. Revisá Internet y recargá.');return false}
   return true;
 }
-
-function cancelImport() {
-  workbook = null;
-  pendingRows = [];
-  $('importPanel').classList.add('hidden');
-  $('confirmImport').disabled = true;
-  $('file').value = '';
-  $('fileError').textContent = '';
-  $('importPreview').innerHTML = '';
+function exportExcel(template=false){
+  if(!excelReady())return;
+  const rows=template?initial().stock:state.stock,ws=XLSX.utils.aoa_to_sheet([['Código','Producto','Stock','Precio','Ubicación'],...rows.map(p=>[p.code,p.name,p.stock,p.price,p.location])]),wb=XLSX.utils.book_new();
+  ws['!cols']=[{wch:15},{wch:40},{wch:10},{wch:18},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,ws,'Stock');XLSX.writeFile(wb,template?'plantilla-stock.xlsx':'stock-repuestos.xlsx');
+}
+function cellNumber(v){
+  if(typeof v==='number')return v;
+  let s=String(v??'').trim().replace(/\$/g,'').replace(/\s/g,'');
+  if(!s)return NaN;
+  if(s.includes(',')){if(!/^-?(?:\d+|\d{1,3}(?:\.\d{3})+),\d{1,2}$/.test(s))return NaN;s=s.replace(/\./g,'').replace(',','.')}
+  else if(/^-?\d{1,3}(?:\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+  return /^-?\d+(\.\d{1,2})?$/.test(s)?Number(s):NaN;
+}
+function parseStock(rows){
+  if(rows.length<2||rows.length>5001)throw Error('La hoja debe contener entre 1 y 5.000 productos.');
+  const h=rows[0].map(norm),names=['codigo','producto','stock','precio','ubicacion'],ix=names.map(n=>h.indexOf(n));
+  if(ix.slice(0,4).includes(-1))throw Error('Usá los encabezados de la plantilla: Código, Producto, Stock, Precio.');
+  if(names.some(n=>h.filter(x=>x===n).length>1))throw Error('Hay encabezados duplicados.');
+  const seen=new Set(),out=[];
+  rows.slice(1).forEach((r,i)=>{
+    if(r.every(x=>String(x??'').trim()===''))return;
+    const p={code:String(r[ix[0]]??'').trim(),name:String(r[ix[1]]??'').trim(),stock:cellNumber(r[ix[2]]),price:cellNumber(r[ix[3]]),location:String(r[ix[4]]??'').trim()};
+    if(!p.code||p.code.length>60||!p.name||p.name.length>200||p.location.length>100||!Number.isInteger(p.stock)||p.stock<0||p.stock>1e6||!Number.isFinite(p.price)||p.price<0||p.price>1e9)throw Error(`Fila ${i+2}: revisá código, producto, stock y precio.`);
+    if(seen.has(norm(p.code)))throw Error(`Código duplicado en fila ${i+2}.`);
+    seen.add(norm(p.code));p.price=cent(p.price)/100;out.push(p);
+  });
+  if(!out.length)throw Error('No hay productos válidos.');return out;
+}
+function cancelImport(){book=null;pending=[];$('importPanel').hidden=true;$('excelFile').value='';$('confirmImport').disabled=true}
+function previewImport(){
+  pending=[];$('confirmImport').disabled=true;$('importPreview').innerHTML='';
+  try{
+    const sheet=book.Sheets[book.SheetNames[Number($('sheet').value)]],range=sheet['!fullref']||sheet['!ref'];
+    if(range&&XLSX.utils.decode_range(range).e.r>=5001)throw Error('La hoja supera las 5.000 filas.');
+    pending=parseStock(XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:true,blankrows:true}));
+    $('importStatus').textContent=`${pending.length} productos válidos. Vista previa de los primeros 5:`;
+    $('importPreview').innerHTML='<table><tr><th>Código</th><th>Producto</th><th>Stock</th><th>Precio</th></tr>'+pending.slice(0,5).map(p=>`<tr><td>${esc(p.code)}</td><td>${esc(p.name)}</td><td>${p.stock}</td><td>${money(p.price)}</td></tr>`).join('')+'</table>';
+    $('confirmImport').disabled=!pro;
+  }catch(e){$('importStatus').textContent=e.message}
+}
+async function importExcel(){
+  if(!excelReady())return;
+  const f=$('excelFile').files[0];book=null;pending=[];$('importPanel').hidden=true;if(!f)return;
+  if(!/\.(xlsx|xls|csv)$/i.test(f.name)||f.size>5*1024*1024){toast('Elegí un Excel/CSV de hasta 5 MB.');return}
+  $('excelFile').disabled=true;
+  try{
+    book=XLSX.read(await f.arrayBuffer(),{type:'array',cellFormula:false,sheetRows:5002});
+    if(!book.SheetNames.length)throw Error('Archivo sin hojas.');
+    $('sheet').innerHTML=book.SheetNames.map((n,i)=>`<option value="${i}">${esc(n)}</option>`).join('');
+    $('importPanel').hidden=false;previewImport();
+  }catch(e){toast('No se pudo leer el archivo: '+e.message)}
+  finally{$('excelFile').disabled=false}
+}
+function confirmImport(){
+  if(!requirePro()||!pending.length)return;
+  const map=new Map(($('importMode').value==='replace'?[]:state.stock).map(p=>[norm(p.code),p]));
+  pending.forEach(p=>map.set(norm(p.code),p));
+  if(map.size>5000){toast('El inventario final supera 5.000 productos.');return}
+  if(save({...state,stock:[...map.values()]})){cancelImport();dirtyQuote();renderStock();toast('Stock importado.')}
 }
 
-function cancelPending() {
-  workbook = null;
-  pendingRows = [];
-  $('confirmImport').disabled = true;
-  $('importPanel').classList.add('hidden');
-  $('importPreview').innerHTML = '';
-  $('fileError').textContent = '';
+// CAPTURAS: vista previa local y extracción real de texto.
+// La captura no se adjunta automáticamente a WhatsApp.
+function removeImage(clearInput=true){
+  imageToken++;imageFile=null;if(imageURL)URL.revokeObjectURL(imageURL);imageURL='';
+  $('imagePreview').removeAttribute('src');if(clearInput)$('imageFile').value='';
+  $('imageBox').hidden=true;$('ocrReview').hidden=true;$('ocrText').value='';$('ocrStatus').textContent='Captura quitada.';
+}
+async function chooseImage(){
+  const f=$('imageFile').files[0];removeImage(false);if(!f)return;
+  if(!['image/png','image/jpeg','image/webp'].includes(f.type)||f.size>8*1024*1024){toast('Elegí una imagen PNG, JPG o WebP de hasta 8 MB.');return}
+  const token=imageToken;imageURL=URL.createObjectURL(f);$('imagePreview').src=imageURL;
+  try{
+    await $('imagePreview').decode();if(token!==imageToken)return;
+    if($('imagePreview').naturalWidth*$('imagePreview').naturalHeight>25000000)throw Error('Imagen demasiado grande. Recortá la captura.');
+    imageFile=f;$('imageBox').hidden=false;$('ocrStatus').textContent='Captura lista. Podés leerla manualmente o extraer el texto con PRO.';
+  }catch(e){if(token===imageToken){removeImage();toast('No se pudo abrir la imagen. '+e.message)}}
+}
+function loadOCR(){
+  if(window.Tesseract)return Promise.resolve();if(loadOCR.promise)return loadOCR.promise;
+  loadOCR.promise=new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+    s.onload=resolve;s.onerror=()=>{s.remove();loadOCR.promise=null;reject(Error('No se pudo cargar el lector. Revisá Internet.'))};
+    document.head.appendChild(s);
+  });
+  return loadOCR.promise;
+}
+async function readImage(){
+  if(!requirePro()||!imageFile||ocrBusy)return;
+  const file=imageFile,token=imageToken;let worker;ocrBusy=true;$('readImage').disabled=true;$('ocrReview').hidden=true;
+  const status=s=>{if(token===imageToken)$('ocrStatus').textContent=s};
+  try{
+    status('Cargando lector de texto… La primera vez puede tardar.');await loadOCR();
+    worker=await Tesseract.createWorker('spa',1,{logger:m=>status(m.status==='recognizing text'?`Leyendo captura: ${Math.round(m.progress*100)}%`:'Preparando lector…')});
+    const result=await worker.recognize(file);if(token!==imageToken)return;
+    if(!result.data.text.trim())throw Error('No se detectó texto. Probá una captura más nítida.');
+    $('ocrText').value=result.data.text.trim().slice(0,5000);$('ocrReview').hidden=false;
+    status('Texto detectado. Revisá nombres, códigos y precios antes de agregarlo.');
+  }catch(e){status('No se pudo leer: '+e.message)}
+  finally{if(worker)await worker.terminate().catch(()=>{});ocrBusy=false;$('readImage').disabled=!pro}
 }
 
-async function loadFile() {
-  cancelPending();
-
-  const f = $('file').files[0];
-  if (!f) return;
-  if (!requireXlsx()) return;
-
-  if (!/\.(xlsx|xls|csv)$/i.test(f.name)) {
-    $('fileError').textContent = 'Elegí un archivo .xlsx, .xls o .csv.';
-    return;
-  }
-
-  if (f.size > 5 * 1024 * 1024) {
-    $('fileError').textContent = 'El archivo supera los 5 MB.';
-    return;
-  }
-
-  importing = true;
-  $('file').disabled = true;
-  $('fileError').textContent = 'Leyendo archivo…';
-
-  try {
-    const data = await f.arrayBuffer();
-
-    workbook = XLSX.read(data, {
-      type: 'array',
-      cellFormula: false,
-      sheetRows: 5002
-    });
-
-    if (!workbook.SheetNames.length) {
-      throw Error('El archivo no contiene hojas.');
-    }
-
-    $('sheet').innerHTML = workbook.SheetNames.map(
-      (name, i) => `<option value="${i}">${esc(name)}</option>`
-    ).join('');
-
-    $('importPanel').classList.remove('hidden');
-    $('fileError').textContent = '';
-    previewImport();
-  } catch (e) {
-    $('fileError').textContent = 'No se pudo importar: ' + e.message;
-  } finally {
-    importing = false;
-    $('file').disabled = false;
-  }
-}
-
-function previewImport() {
-  pendingRows = [];
-  $('confirmImport').disabled = true;
-  $('importPreview').innerHTML = '';
-
-  try {
-    const ws = workbook.Sheets[
-      workbook.SheetNames[Number($('sheet').value)]
-    ];
-
-    const range = ws['!fullref'] || ws['!ref'];
-
-    if (range && XLSX.utils.decode_range(range).e.r >= 5001) {
-      throw Error('La hoja supera las 5.000 filas.');
-    }
-
-    const rows = XLSX.utils.sheet_to_json(ws, {
-      header: 1,
-      defval: '',
-      raw: true,
-      blankrows: true
-    });
-
-    pendingRows = parseRows(rows);
-
-    $('importStatus').textContent =
-      `${pendingRows.length} productos válidos. Vista previa de los primeros 5. Revisá los datos antes de confirmar.`;
-
-    $('importStatus').className = 'hint success';
-
-    $('importPreview').innerHTML = `
-      <table>
-        <thead>
-          <tr><th>Código</th><th>Producto</th><th>Stock</th><th>Precio</th></tr>
-        </thead>
-        <tbody>
-          ${pendingRows.slice(0, 5).map(p => `
-            <tr>
-              <td>${esc(p.code)}</td>
-              <td>${esc(p.name)}</td>
-              <td>${p.stock}</td>
-              <td>${money(p.price)}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    `;
-
-    $('confirmImport').disabled = false;
-  } catch (e) {
-    $('importStatus').textContent = e.message;
-    $('importStatus').className = 'hint error';
-  }
-}
-
-function commitImport() {
-  if (!pendingRows.length || importing) return;
-
-  const next = JSON.parse(JSON.stringify(state));
-
-  if ($('importMode').value === 'replace') {
-    next.inventories[state.sector] = pendingRows;
-  } else {
-    const map = new Map(catalog().map(p => [norm(p.code), p]));
-    pendingRows.forEach(p => map.set(norm(p.code), p));
-    next.inventories[state.sector] = [...map.values()];
-  }
-
-  if (next.inventories[state.sector].length > 5000) {
-    toast('El catálogo final supera los 5.000 productos.');
-    return;
-  }
-
-  next.sources[state.sector] =
-    'Stock importado · ' + new Date().toLocaleDateString('es-AR');
-
-  if (!persist(next)) return;
-
-  state = next;
-  cancelImport();
-  renderStock();
-  selectProduct();
-  markDirty();
-  toast('Stock importado y guardado en este navegador.');
-}
-
-function downloadExcel(template = false) {
-  if (!requireXlsx()) return;
-
-  const products = template ? [
-    {
-      code: 'REP-001',
-      name: 'Bomba de embrague Hilux',
-      stock: 4,
-      price: 140000,
-      location: 'Estantería B3'
-    },
-    {
-      code: 'REP-002',
-      name: 'Pastillas de freno Corolla',
-      stock: 0,
-      price: 65000,
-      location: 'Estantería A2'
-    }
-  ] : catalog();
-
-  const rows = [
-    ['Código', 'Producto', 'Stock', 'Precio', 'Ubicación'],
-    ...products.map(p => [p.code, p.name, p.stock, p.price, p.location])
-  ];
-
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [
-    { wch: 16 },
-    { wch: 40 },
-    { wch: 12 },
-    { wch: 18 },
-    { wch: 24 }
-  ];
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Stock');
-
-  XLSX.writeFile(
-    wb,
-    template ? 'plantilla-stock.xlsx' : `stock-${state.sector}.xlsx`
-  );
-}
-
-/* CONFIGURACIÓN Y PERSONALIZACIÓN */
-
-function saveMessageDraft() {
-  const tone = $('editTone').dataset.previous || $('editTone').value;
-  messageDraft[tone] = {
-    opening: $('customOpening').value,
-    closing: $('customClosing').value
-  };
-}
-
-function loadMessageEditor() {
-  const tone = $('editTone').value;
-  $('editTone').dataset.previous = tone;
-  $('customOpening').value = messageDraft[tone].opening;
-  $('customClosing').value = messageDraft[tone].closing;
-  previewCustomMessage();
-}
-
-function previewCustomMessage() {
-  const values = {
-    cliente: 'Lucas',
-    negocio: $('business').value.trim() || 'Tu negocio',
-    validez: 'la fecha indicada'
-  };
-
-  const render = s => s.replace(
-    /\{(cliente|negocio|validez)\}/g,
-    (_, k) => values[k]
-  );
-
-  $('customPreview').textContent = [
-    render($('customOpening').value),
-    '[Detalle, precios y validez del presupuesto]',
-    render($('customClosing').value),
-    $('signature').value.trim() || values.negocio
-  ].join('\n\n');
-}
-
-function applySettings() {
-  const values = {
-    sector: state.sector,
-    business: state.business,
-    defaultDiscount: state.discount,
-    defaultTone: state.tone,
-    discount: state.discount,
-    tone: state.tone,
-    validityDays: state.validityDays,
-    signature: state.signature,
-    bankHolder: state.bank.holder,
-    bankName: state.bank.name,
-    bankAlias: state.bank.alias,
-    bankAccount: state.bank.account
-  };
-
-  for (const [id, val] of Object.entries(values)) {
-    $(id).value = val;
-  }
-
-  $('sectorLabel').textContent = RUBROS[state.sector];
-
-  const expires = new Date();
-  expires.setDate(expires.getDate() + state.validityDays);
-
-  $('validUntil').value = localDateTime(expires);
-  $('validUntil').min = localDateTime(new Date());
-
-  messageDraft = JSON.parse(JSON.stringify(state.messages));
-  loadMessageEditor();
-  tonePreview();
-  renderStock();
-  renderCalculation();
-  renderAppointments();
-  renderTransfer();
-}
-
-function resetOrder() {
-  $('product').value = '';
-  $('quantity').value = 1;
-  $('amount').readOnly = false;
-  $('amount').value = 0;
-  $('query').value = '';
-  quote = null;
-  dirty = false;
-  $('empty').classList.remove('hidden');
-  $('result').classList.add('hidden');
-  $('printArea').innerHTML = '';
-  cancelImport();
-}
-
-function saveSettings() {
-  try {
-    $('settingsError').textContent = '';
-
-    const business = $('business').value.trim();
-    if (!business) throw Error('Ingresá el nombre comercial.');
-
-    saveMessageDraft();
-
-    const bank = {
-      holder: $('bankHolder').value.trim(),
-      name: $('bankName').value.trim(),
-      alias: $('bankAlias').value.trim(),
-      account: $('bankAccount').value.trim()
-    };
-
-    if (bank.account && !/^\d{22}$/.test(bank.account)) {
-      throw Error('El CBU / CVU debe tener 22 dígitos.');
-    }
-
-    if ((bank.alias || bank.account) && !bank.holder) {
-      throw Error('Ingresá el titular de la cuenta para transferencias.');
-    }
-
-    for (const m of Object.values(messageDraft)) {
-      if (!m.opening.trim() || !m.closing.trim()) {
-        throw Error('Completá el saludo y el cierre de ambos estilos.');
-      }
-    }
-
-    const next = {
-      ...state,
-      business,
-      discount: readNumber('defaultDiscount', 0, 100),
-      tone: $('defaultTone').value,
-      sector: $('sector').value,
-      validityDays: readNumber('validityDays', 1, 90, true),
-      signature: $('signature').value.trim(),
-      messages: JSON.parse(JSON.stringify(messageDraft)),
-      bank
-    };
-
-    if (!persist(next)) return;
-
-    const changed = next.sector !== state.sector;
-    state = next;
-
-    if (changed) {
-      resetOrder();
-    } else {
-      markDirty();
-    }
-
-    applySettings();
-    toast('Configuración guardada y aplicada.');
-  } catch (e) {
-    $('settingsError').textContent = e.message;
-  }
-}
-
-/* TRANSFERENCIAS */
-
-function transferText() {
-  const b = state.bank;
-
-  if (!b.holder || !(b.alias || b.account)) {
-    throw Error('Completá el titular y un alias o CBU / CVU en Configuración.');
-  }
-
+// TURNOS
+const STATUS={pendiente:'Pendiente',confirmado:'Confirmado',cancelado:'Cancelado',completado:'Completado'};
+const active=a=>['pendiente','confirmado'].includes(a.status),end=a=>+new Date(a.start)+a.duration*60000;
+function overlaps(a,b){return a.id!==b.id&&active(a)&&active(b)&&norm(a.resource)===norm(b.resource)&&+new Date(a.start)<end(b)&&end(a)>+new Date(b.start)}
+function appointmentText(a){
   return [
-    'Datos para transferencia',
-    `Titular: ${b.holder}`,
-    ...(b.name ? [`Banco / billetera: ${b.name}`] : []),
-    ...(b.alias ? [`Alias: ${b.alias}`] : []),
-    ...(b.account ? [`CBU / CVU: ${b.account}`] : [])
+    `${state.tone==='formal'?'Hola,':'¡Hola,'} ${a.client}${state.tone==='formal'?'.':'! 👋'}`,
+    `Estado del turno: ${STATUS[a.status]}`,`Trabajo: ${a.service}`,`Fecha y hora: ${dateText(a.start)}`,
+    `Duración: ${a.duration} minutos`,`Mecánico / puesto: ${a.resource}`,
+    state.tone==='formal'?'Si necesita consultar o reprogramar, contáctenos.':'Si necesitás consultar o reprogramar, contactanos.',
+    pro&&state.signature?state.signature:state.business
   ].join('\n');
 }
-
-function renderTransfer() {
-  try {
-    $('transferPreview').textContent = transferText();
-  } catch (e) {
-    $('transferPreview').textContent = e.message;
-  }
+function showAppointment(a){appointmentId=a.id;$('appointmentMessage').textContent=appointmentText(a);$('copyAppointment').disabled=false;$('sendAppointment').disabled=!a.phone}
+function renderAgenda(){
+  const previous=$('quoteAppointment').value,rows=state.appointments.filter(a=>$('showClosed').checked||active(a)).sort((a,b)=>new Date(a.start)-new Date(b.start));
+  $('appointmentRows').innerHTML=rows.map(a=>`<tr><td>${dateText(a.start)}<br>${a.duration} min</td><td>${esc(a.client)}<br>${esc(a.service)}</td><td>${esc(a.resource)}</td><td>${STATUS[a.status]}</td><td><div class="row">${(active(a)?['mensaje','editar','confirmar','cancelar','completar']:['mensaje']).map(action=>`<button class="btn mini" data-id="${esc(a.id)}" data-action="${action}">${action}</button>`).join('')}</div></td></tr>`).join('')||'<tr><td colspan="5">No hay turnos.</td></tr>';
+  $('quoteAppointment').innerHTML='<option value="">Sin turno</option>'+state.appointments.filter(a=>active(a)&&new Date(a.start)>new Date()).map(a=>`<option value="${esc(a.id)}">${esc(a.client)} · ${dateText(a.start)}</option>`).join('');
+  if([...$('quoteAppointment').options].some(o=>o.value===previous))$('quoteAppointment').value=previous;
+  const a=state.appointments.find(a=>a.id===appointmentId);if(a)showAppointment(a);
 }
-
-async function copyPlain(text, id) {
-  try {
-    await navigator.clipboard.writeText(text);
-    toast('Texto copiado.');
-  } catch (e) {
-    const range = document.createRange();
-    range.selectNodeContents($(id));
-
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    toast('Texto seleccionado. Usá Ctrl+C o ⌘C para copiarlo.');
-  }
+function resetAppointment(){editing=null;$('appointmentForm').reset();$('appointmentTitle').textContent='Nuevo turno'}
+function saveAppointment(e){
+  e.preventDefault();if(!requirePro())return;
+  guard(()=>{
+    const a={id:editing||crypto.randomUUID(),client:$('appointmentClient').value.trim(),phone:$('appointmentPhone').value.trim(),service:$('appointmentService').value.trim(),start:$('appointmentStart').value,duration:number('appointmentDuration',5,480,true),resource:$('appointmentResource').value.trim(),status:$('appointmentStatus').value,notes:$('appointmentNotes').value.trim()};
+    if(!a.client||!a.service||!a.resource)throw Error('Completá cliente, trabajo y puesto.');
+    if(a.phone)phone(a.phone);
+    if(!Number.isFinite(+new Date(a.start))||new Date(a.start)<=new Date()||a.duration%5)throw Error('Elegí una fecha futura y duración múltiplo de 5 minutos.');
+    a.start=new Date(a.start).toISOString();
+    if(state.appointments.some(b=>overlaps(a,b)))throw Error('Ese puesto ya está ocupado en ese horario.');
+    if(save({...state,appointments:[...state.appointments.filter(b=>b.id!==a.id),a]})){resetAppointment();dirtyQuote();renderAgenda();showAppointment(a);toast('Turno guardado.')}
+  });
 }
-
-function openPreparedWhatsApp(phone, text) {
-  const number = normalizePhone(phone);
-
-  window.open(
-    `https://wa.me/${number}?text=${encodeURIComponent(text)}`,
-    '_blank',
-    'noopener,noreferrer'
-  );
-}
-
-/* AGENDA DE TURNOS */
-
-const APPOINTMENT_STATES = {
-  pendiente: 'Pendiente de confirmación',
-  confirmado: 'Confirmado',
-  cancelado: 'Cancelado',
-  completado: 'Completado'
-};
-
-function isActive(a) {
-  return a.status === 'pendiente' || a.status === 'confirmado';
-}
-
-function appointmentEnd(a) {
-  return new Date(new Date(a.start).getTime() + a.duration * 60000);
-}
-
-function appointmentsOverlap(a, b) {
-  return a.id !== b.id &&
-    a.sector === b.sector &&
-    norm(a.resource) === norm(b.resource) &&
-    isActive(a) &&
-    isActive(b) &&
-    new Date(a.start) < appointmentEnd(b) &&
-    appointmentEnd(a) > new Date(b.start);
-}
-
-function appointmentSummary(a) {
-  return `Turno ${APPOINTMENT_STATES[a.status].toLowerCase()}: ${formatDateTime(a.start)} · ${a.duration} min\nServicio: ${a.service}\nResponsable: ${a.resource}`;
-}
-
-function renderAppointments() {
-  const date = $('appointmentFilterDate').value;
-  const all = $('appointmentFilterStatus').value === 'todos';
-
-  const rows = state.appointments
-    .filter(a =>
-      a.sector === state.sector &&
-      (all || isActive(a)) &&
-      (!date || localDateTime(a.start).slice(0, 10) === date)
-    )
-    .sort((a, b) => new Date(a.start) - new Date(b.start));
-
-  $('appointmentCount').textContent = rows.length + ' turnos';
-
-  $('appointmentList').innerHTML = rows.map(a => `
-    <tr>
-      <td>
-        ${esc(formatDateTime(a.start))}<br>
-        <small>
-          Hasta ${esc(appointmentEnd(a).toLocaleTimeString('es-AR', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hourCycle: 'h23'
-          }))} · ${a.duration} min
-        </small>
-      </td>
-      <td><b>${esc(a.client)}</b><br>${esc(a.service)}</td>
-      <td>${esc(a.resource)}</td>
-      <td>
-        ${esc(APPOINTMENT_STATES[a.status])}
-        ${isActive(a) && new Date(a.start) < new Date()
-          ? '<br><small>Horario transcurrido</small>'
-          : ''}
-      </td>
-      <td>
-        <div class="row">
-          <button class="btn small" data-appointment="${esc(a.id)}" data-action="message">
-            Mensaje
-          </button>
-          ${isActive(a) ? `
-            <button class="btn small" data-appointment="${esc(a.id)}" data-action="edit">
-              Reprogramar / editar
-            </button>
-            ${a.status === 'pendiente' ? `
-              <button class="btn small" data-appointment="${esc(a.id)}" data-action="confirm">
-                Confirmar
-              </button>
-            ` : ''}
-            <button class="btn small" data-appointment="${esc(a.id)}" data-action="complete">
-              Completar
-            </button>
-            <button class="btn small" data-appointment="${esc(a.id)}" data-action="cancel">
-              Cancelar
-            </button>
-          ` : ''}
-        </div>
-      </td>
-    </tr>
-  `).join('') || `
-    <tr>
-      <td colspan="5" class="muted">
-        No hay turnos para este filtro. Creá uno desde el formulario.
-      </td>
-    </tr>
-  `;
-
-  const previous = $('quoteAppointment').value;
-
-  $('quoteAppointment').innerHTML =
-    '<option value="">Sin turno asociado</option>' +
-    state.appointments
-      .filter(a =>
-        a.sector === state.sector &&
-        isActive(a) &&
-        new Date(a.start) > new Date()
-      )
-      .sort((a, b) => new Date(a.start) - new Date(b.start))
-      .map(a => `
-        <option value="${esc(a.id)}">
-          ${esc(a.client + ' · ' + formatDateTime(a.start) + ' · ' + APPOINTMENT_STATES[a.status])}
-        </option>
-      `).join('');
-
-  if ([...$('quoteAppointment').options].some(o => o.value === previous)) {
-    $('quoteAppointment').value = previous;
-  }
-
-  $('appointmentStart').min = localDateTime(new Date());
-
-  if (appointmentMessageId) {
-    const a = state.appointments.find(
-      a => a.id === appointmentMessageId && a.sector === state.sector
-    );
-
-    if (a) {
-      showAppointmentMessage(a);
-    } else {
-      clearAppointmentMessage();
+function appointmentAction(e){
+  const b=e.target.closest('[data-id]');if(!b||!requirePro())return;
+  guard(()=>{
+    const a=state.appointments.find(a=>a.id===b.dataset.id),action=b.dataset.action;if(!a)return;
+    if(action==='mensaje'){showAppointment(a);return}
+    if(action==='editar'){
+      editing=a.id;$('appointmentTitle').textContent='Editar / reprogramar';
+      Object.entries({appointmentClient:a.client,appointmentPhone:a.phone,appointmentService:a.service,appointmentStart:localDate(a.start),appointmentDuration:a.duration,appointmentResource:a.resource,appointmentStatus:a.status,appointmentNotes:a.notes||''}).forEach(([k,v])=>$(k).value=v);
+      $('appointmentClient').focus();return;
     }
-  }
-}
-
-function clearAppointmentMessage() {
-  appointmentMessageId = null;
-  $('appointmentMessage').textContent = 'Todavía no seleccionaste un turno.';
-  $('copyAppointment').disabled = true;
-  $('sendAppointment').disabled = true;
-}
-
-function resetAppointmentForm() {
-  editingAppointment = null;
-  $('appointmentForm').reset();
-  $('appointmentTitle').textContent = 'Nuevo turno';
-  $('saveAppointment').textContent = 'Guardar turno';
-  $('appointmentError').textContent = '';
-  $('appointmentStart').min = localDateTime(new Date());
-}
-
-function saveAppointment(event) {
-  event.preventDefault();
-
-  try {
-    $('appointmentError').textContent = '';
-
-    const client = $('appointmentClient').value.trim();
-    const phone = $('appointmentPhone').value.trim();
-    const service = $('appointmentService').value.trim();
-    const resource = $('appointmentResource').value.trim();
-    const start = new Date($('appointmentStart').value);
-    const duration = readNumber('appointmentDuration', 5, 480, true);
-
-    if (!client || !service || !resource) {
-      throw Error('Completá cliente, servicio y responsable.');
-    }
-
-    if (phone) normalizePhone(phone);
-
-    if (!Number.isFinite(start.getTime()) || start <= new Date()) {
-      throw Error('Elegí una fecha y hora futura.');
-    }
-
-    if (duration % 5) {
-      throw Error('La duración debe ser un múltiplo de 5 minutos.');
-    }
-
-    const appointment = {
-      id: editingAppointment || crypto.randomUUID(),
-      sector: state.sector,
-      client,
-      phone,
-      service,
-      resource,
-      start: start.toISOString(),
-      duration,
-      status: $('appointmentStatus').value,
-      notes: $('appointmentNotes').value.trim()
-    };
-
-    const conflict = state.appointments.find(
-      a => appointmentsOverlap(appointment, a)
-    );
-
-    if (conflict) {
-      throw Error(
-        `Horario ocupado para ${resource}: ${formatDateTime(conflict.start)} (${conflict.duration} min). Elegí otro horario o responsable.`
-      );
-    }
-
-    const next = {
-      ...state,
-      appointments: [
-        ...state.appointments.filter(a => a.id !== appointment.id),
-        appointment
-      ]
-    };
-
-    if (!persist(next)) return;
-
-    state = next;
-    resetAppointmentForm();
-    markDirty();
-    renderAppointments();
-    showAppointmentMessage(appointment);
-    toast('Turno guardado. El mensaje está listo para revisar.');
-  } catch (e) {
-    $('appointmentError').textContent = e.message;
-  }
-}
-
-function editAppointment(a) {
-  editingAppointment = a.id;
-  $('appointmentTitle').textContent = 'Editar / reprogramar turno';
-  $('saveAppointment').textContent = 'Guardar cambios';
-
-  const values = {
-    appointmentClient: a.client,
-    appointmentPhone: a.phone,
-    appointmentService: a.service,
-    appointmentResource: a.resource,
-    appointmentStart: localDateTime(a.start),
-    appointmentDuration: a.duration,
-    appointmentStatus: a.status,
-    appointmentNotes: a.notes
-  };
-
-  for (const [id, value] of Object.entries(values)) {
-    $(id).value = value;
-  }
-
-  $('appointmentError').textContent = '';
-  $('appointmentClient').focus();
-}
-
-function changeAppointmentStatus(a, status) {
-  try {
-    if (!isActive(a)) {
-      throw Error('Este turno ya está cerrado.');
-    }
-
-    const changed = { ...a, status };
-
-    if (status === 'confirmado') {
-      if (new Date(a.start) <= new Date()) {
-        throw Error('El horario ya pasó. Reprogramá el turno antes de confirmarlo.');
-      }
-
-      if (state.appointments.some(b => appointmentsOverlap(changed, b))) {
-        throw Error('Este horario está ocupado. Reprogramá el turno.');
-      }
-    }
-
-    const next = {
-      ...state,
-      appointments: state.appointments.map(
-        b => b.id === a.id ? changed : b
-      )
-    };
-
-    if (!persist(next)) return;
-
-    state = next;
-    markDirty();
-
-    if (editingAppointment === a.id) {
-      resetAppointmentForm();
-    }
-
-    renderAppointments();
-    showAppointmentMessage(changed);
-    toast('Estado actualizado: ' + APPOINTMENT_STATES[status]);
-  } catch (e) {
-    toast(e.message);
-  }
-}
-
-function appointmentMessageText(a) {
-  const formal = state.tone === 'formal';
-
-  const statusText = {
-    pendiente: formal
-      ? 'Su solicitud de turno está pendiente de confirmación.'
-      : 'Tu turno está pendiente de confirmación.',
-    confirmado: formal
-      ? 'Su turno está confirmado.'
-      : '¡Tu turno está confirmado! ✅',
-    cancelado: formal
-      ? 'Le informamos que su turno fue cancelado.'
-      : 'Te avisamos que tu turno fue cancelado.',
-    completado: formal
-      ? 'Su atención fue registrada como completada. Gracias por elegirnos.'
-      : '¡Gracias por venir! Tu atención quedó completada.'
-  }[a.status];
-
-  return [
-    formal ? `Hola, ${a.client}.` : `¡Hola, ${a.client}! 👋`,
-    statusText,
-    '',
-    `Servicio: ${a.service}`,
-    `Fecha y hora: ${formatDateTime(a.start)}`,
-    `Duración: ${a.duration} minutos`,
-    `Responsable: ${a.resource}`,
-    '',
-    formal
-      ? 'Ante cualquier consulta o cambio, comuníquese con nosotros.'
-      : 'Si necesitás cambiar algo, escribinos.',
-    state.signature || state.business
-  ].join('\n');
-}
-
-function showAppointmentMessage(a) {
-  appointmentMessageId = a.id;
-  $('appointmentMessage').textContent = appointmentMessageText(a);
-  $('copyAppointment').disabled = false;
-  $('sendAppointment').disabled = !a.phone;
-}
-
-/* EVENTOS */
-
-$('start').onclick = () => {
-  const sector = document.querySelector('input[name="rubro"]:checked').value;
-  state.sector = sector;
-  state.business = NAMES[sector];
-  state.onboarded = true;
-  persist();
-  applySettings();
-  $('onboarding').classList.add('hidden');
-};
-
-document.querySelectorAll('[data-view]').forEach(b => {
-  b.onclick = () => showView(b.dataset.view);
-});
-
-$('openStock').onclick = () => showView('stock');
-$('freePlan').onclick = () => setPlan('gratis');
-$('proPlan').onclick = () => setPlan('pro');
-$('generate').onclick = generate;
-$('search').oninput = renderStock;
-$('product').onchange = selectProduct;
-
-$('inventory').onclick = e => {
-  const b = e.target.closest('[data-product]');
-
-  if (b) {
-    $('product').value = b.dataset.product;
-    $('quantity').value = 1;
-    selectProduct();
-    showView('ventas');
-  }
-};
-
-$('example').onclick = () => {
-  $('client').value = 'Marcos Gómez';
-  $('phone').value = '';
-
-  $('query').value = {
-    repuestos: 'Hola, ¿tenés bomba de embrague para Hilux? ¿Cuánto sale y cómo puedo pagar?',
-    gastronomia: 'Hola, quisiera pedir hamburguesas. ¿Tienen envío y descuento por transferencia?',
-    servicios: 'Hola, quisiera consultar por una clase. ¿Cuál es el precio y la disponibilidad?'
-  }[state.sector];
-
-  const p = catalog().find(p => p.stock > 0);
-  $('product').value = p?.code || '';
-  $('quantity').value = 1;
-  selectProduct();
-};
-
-for (const id of ['amount', 'vat', 'shippingCost', 'discount', 'installments', 'surcharge']) {
-  $(id).addEventListener('input', () => {
-    markDirty();
-    renderCalculation();
+    const status={confirmar:'confirmado',cancelar:'cancelado',completar:'completado'}[action];
+    if(!status||!active(a))return;
+    const changed={...a,status};
+    if(status==='confirmado'&&(new Date(a.start)<=new Date()||state.appointments.some(x=>overlaps(changed,x))))throw Error('Reprogramá el turno: el horario pasó o está ocupado.');
+    if(save({...state,appointments:state.appointments.map(x=>x.id===a.id?changed:x)})){if(editing===a.id)resetAppointment();dirtyQuote();renderAgenda();showAppointment(changed)}
   });
 }
 
-$('quantity').oninput = () => {
-  if (selected()) {
-    selectProduct();
-  } else {
-    markDirty();
-  }
+// EVENTOS
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+$('switchPlan').onclick=setPlan;$('generate').onclick=generate;
+$('product').onchange=()=>setProduct();$('quantity').oninput=()=>setProduct();$('search').oninput=renderStock;
+
+$('example').onclick=()=>{
+  $('client').value='Marcos Gómez';$('query').value='Hola, ¿tenés bomba de embrague para Hilux? ¿Cuánto cuesta y cómo puedo pagar?';
+  $('quantity').value=1;$('product').value=state.stock.find(p=>p.stock>0)?.code||'';setProduct();
 };
-
-for (const id of ['client', 'phone', 'query']) {
-  $(id).oninput = markDirty;
-}
-
-$('tone').onchange = () => {
-  tonePreview();
-  markDirty();
+$('shipping').onchange=()=>{
+  $('shippingCost').value={mostrador:0,moto:4500,correo:8200}[$('shipping').value];
+  $('shippingCost').disabled=$('shipping').value==='mostrador';dirtyQuote();renderTotals();
 };
+$('offerInstallments').onchange=()=>{$('installmentFields').hidden=!$('offerInstallments').checked;dirtyQuote();renderTotals()};
+['amount','vat','discount','shippingCost','installments','surcharge'].forEach(id=>$(id).addEventListener('input',()=>{dirtyQuote();renderTotals()}));
+['client','phone','query','tone','validUntil','includeTransfer','quoteAppointment','note'].forEach(id=>$(id).addEventListener('input',dirtyQuote));
 
-$('shipping').onchange = () => {
-  $('shippingCost').disabled = $('shipping').value === 'mostrador';
-  $('shippingCost').value = {
-    mostrador: 0,
-    moto: 4500,
-    correo: 8200
-  }[$('shipping').value];
-
-  markDirty();
-  renderCalculation();
-};
-
-$('offerInstallments').onchange = () => {
-  $('installmentFields').classList.toggle(
-    'hidden',
-    !$('offerInstallments').checked
-  );
-
-  markDirty();
-  renderCalculation();
-};
-
-$('whatsapp').onclick = () => {
-  if (!ensureFresh()) return;
-
-  try {
-    const phone = normalizePhone(quote.phone);
-
-    window.open(
-      `https://wa.me/${phone}?text=${encodeURIComponent(quote.text)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-  } catch (e) {
-    toast(e.message);
-    $('phone').focus();
-  }
-};
-
-$('copy').onclick = async () => {
-  if (!ensureFresh()) return;
-
-  try {
-    await navigator.clipboard.writeText(quote.text);
-    toast('Respuesta copiada.');
-  } catch (e) {
-    const selection = window.getSelection();
-    const range = document.createRange();
-
-    range.selectNodeContents($('message'));
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    toast('No se pudo copiar automáticamente. Texto seleccionado: usá Ctrl+C o ⌘C.');
-  }
-};
-
-$('print').onclick = () => {
-  if (plan === 'pro' && ensureFresh()) {
+$('send').onclick=()=>{if(freshQuote())guard(()=>whatsapp(quote.phone,quote.text))};
+$('copy').onclick=()=>{if(freshQuote())copy(quote.text,'message')};
+$('pdf').onclick=()=>{
+  if(requirePro()&&freshQuote()){
+    $('printArea').innerHTML=`<div class="paper"><h2>${esc(quote.business)}</h2><small>Presupuesto · ${dateText(new Date())}</small><hr>${esc(quote.text)}<hr><small>No válido como factura. Las opciones de pago no se acumulan.</small></div>`;
     window.print();
   }
 };
+$('copyBank').onclick=()=>guard(()=>copy(bankText(),'transferPreview'));
+$('sendBank').onclick=()=>guard(()=>whatsapp($('phone').value,bankText()));
+$('settingsForm').onsubmit=saveSettings;
 
-$('template').onclick = () => downloadExcel(true);
-$('export').onclick = () => downloadExcel();
-$('file').onchange = loadFile;
-$('sheet').onchange = previewImport;
-$('confirmImport').onclick = commitImport;
-$('cancelImport').onclick = cancelImport;
-
-$('importMode').onchange = () => {
-  $('replaceWarning').classList.toggle(
-    'hidden',
-    $('importMode').value !== 'replace'
-  );
+$('productForm').onsubmit=e=>{
+  e.preventDefault();guard(()=>{
+    const p={code:$('code').value.trim(),name:$('productName').value.trim(),stock:number('productStock',0,1e6,true),price:cent(number('productPrice',0,1e9))/100,location:$('location').value.trim()};
+    if(!p.code||!p.name)throw Error('Completá código y producto.');
+    const exists=state.stock.find(x=>norm(x.code)===norm(p.code));if(exists)p.code=exists.code;
+    const stock=[...state.stock.filter(x=>norm(x.code)!==norm(p.code)),p];
+    if(stock.length>5000)throw Error('Máximo 5.000 productos.');
+    if(save({...state,stock})){$('productForm').reset();dirtyQuote();renderStock();toast('Repuesto guardado.')}
+  });
 };
-
-$('saveSettings').onclick = saveSettings;
-
-$('editTone').onchange = () => {
-  saveMessageDraft();
-  loadMessageEditor();
-};
-
-for (const id of ['customOpening', 'customClosing', 'business', 'signature']) {
-  $(id).addEventListener('input', previewCustomMessage);
-}
-
-for (const id of ['validUntil', 'quoteAppointment', 'includeTransfer', 'quoteNote']) {
-  $(id).addEventListener('input', markDirty);
-}
-
-$('copyTransfer').onclick = () => {
-  try {
-    copyPlain(transferText(), 'transferPreview');
-  } catch (e) {
-    toast(e.message);
+$('stockRows').onclick=e=>{
+  const b=e.target.closest('[data-edit],[data-quote]');if(!b)return;
+  const p=state.stock.find(p=>p.code===(b.dataset.edit||b.dataset.quote));
+  if(b.dataset.edit){
+    Object.entries({code:p.code,productName:p.name,productStock:p.stock,productPrice:p.price,location:p.location}).forEach(([k,v])=>$(k).value=v);
+    $('code').focus();
+  }else{
+    $('product').value=p.code;$('quantity').value=1;if(!$('query').value.trim())$('query').value='Consulta por '+p.name;
+    setProduct();tab('ventas');
   }
 };
+$('template').onclick=()=>exportExcel(true);$('exportStock').onclick=()=>exportExcel();
+$('excelFile').onchange=importExcel;$('sheet').onchange=previewImport;
+$('confirmImport').onclick=confirmImport;$('cancelImport').onclick=cancelImport;
 
-$('sendTransfer').onclick = () => {
-  try {
-    openPreparedWhatsApp($('phone').value, transferText());
-  } catch (e) {
-    toast(e.message);
-  }
+$('imageFile').onchange=chooseImage;$('removeImage').onclick=removeImage;$('readImage').onclick=readImage;
+$('useOcr').onclick=()=>{
+  if(!requirePro())return;const t=$('ocrText').value.trim();
+  if(!t){toast('No hay texto para agregar.');return}
+  const combined=[$('query').value.trim(),t].filter(Boolean).join('\n');
+  if(combined.length>5000){toast('El texto supera 5.000 caracteres. Recortá la consulta.');return}
+  $('query').value=combined;dirtyQuote();toast('Texto agregado. Revisá el pedido antes de cotizar.');
 };
 
-$('appointmentForm').onsubmit = saveAppointment;
-$('resetAppointment').onclick = resetAppointmentForm;
-
-$('useCustomer').onclick = () => {
-  $('appointmentClient').value = $('client').value;
-  $('appointmentPhone').value = $('phone').value;
-  $('appointmentService').value =
-    selected()?.name || $('query').value.slice(0, 200);
+$('appointmentForm').onsubmit=saveAppointment;$('resetAppointment').onclick=resetAppointment;
+$('showClosed').onchange=renderAgenda;$('appointmentRows').onclick=appointmentAction;
+$('useCustomer').onclick=()=>{
+  $('appointmentClient').value=$('client').value;$('appointmentPhone').value=$('phone').value;
+  $('appointmentService').value=product()?.name||$('query').value.slice(0,200);
+};
+$('copyAppointment').onclick=()=>{
+  if(requirePro()){const a=state.appointments.find(a=>a.id===appointmentId);if(a)copy(appointmentText(a),'appointmentMessage')}
+};
+$('sendAppointment').onclick=()=>{
+  if(requirePro())guard(()=>{const a=state.appointments.find(a=>a.id===appointmentId);if(a)whatsapp(a.phone,appointmentText(a))});
 };
 
-for (const id of ['appointmentFilterDate', 'appointmentFilterStatus']) {
-  $(id).onchange = renderAppointments;
-}
-
-$('appointmentList').onclick = e => {
-  const b = e.target.closest('[data-appointment]');
-  if (!b) return;
-
-  const a = state.appointments.find(a => a.id === b.dataset.appointment);
-  if (!a) return;
-
-  const action = b.dataset.action;
-
-  if (action === 'message') showAppointmentMessage(a);
-  if (action === 'edit') editAppointment(a);
-  if (action === 'confirm') changeAppointmentStatus(a, 'confirmado');
-  if (action === 'complete') changeAppointmentStatus(a, 'completado');
-  if (action === 'cancel') changeAppointmentStatus(a, 'cancelado');
-};
-
-$('copyAppointment').onclick = () => {
-  const a = state.appointments.find(a => a.id === appointmentMessageId);
-  if (a) copyPlain(appointmentMessageText(a), 'appointmentMessage');
-};
-
-$('sendAppointment').onclick = () => {
-  try {
-    const a = state.appointments.find(a => a.id === appointmentMessageId);
-    if (a) openPreparedWhatsApp(a.phone, appointmentMessageText(a));
-  } catch (e) {
-    toast(e.message);
-  }
-};
-
-/* INICIO */
-
-applySettings();
-
-if (state.onboarded) {
-  $('onboarding').classList.add('hidden');
-}
+// INICIO
+settings();renderStock();renderAgenda();
+document.querySelectorAll('[data-pro]').forEach(el=>el.disabled=true);
 </script>
 </body>
 </html>
