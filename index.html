@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAtencion Clientes - De Consultas Manuales a Ventas Cerradas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-16">
+
+    <!-- BARRA SUPERIOR CON ARQUITECTURA DE 2 COMPONENTES -->
+    <header class="bg-slate-900 border-b border-slate-800 py-3.5 px-6 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-lg shadow-md shadow-emerald-500/20">IA</div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white"><span class="text-emerald-400">IA</span>tencion Clientes</h1>
+                    <p class="text-[11px] text-slate-400">Recepción inteligente de pedidos y consultas por WhatsApp y Teléfono</p>
+                </div>
+            </div>
+
+            <!-- Selector de Evolución de Producto (2 Componentes) -->
+            <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <span class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950 shadow">
+                    ⚡ 1. MVP Express (Recepción Directa)
+                </span>
+                <span class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 cursor-not-allowed" title="Se desbloquea en la versión 2.0">
+                    🔒 2. Suite Pro (Posnet, Turnos & Tablero)
+                </span>
+            </div>
+
+            <!-- Conexión Segura OpenAI (Guardada en navegador, nunca en GitHub) -->
+            <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                <span id="badgeEstadoIA" class="text-[11px] px-2 py-0.5 rounded font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    Simulador Activo
+                </span>
+                <input type="password" id="apiKeyInput" placeholder="Pegar API Key OpenAI..." 
+                       oninput="verificarApiKey()"
+                       class="bg-transparent text-xs text-slate-200 px-2 py-0.5 focus:outline-none w-40">
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL: COMPONENTE 1 (MVP EXPRESS) -->
+    <main class="max-w-6xl mx-auto mt-8 px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- COLUMNA IZQUIERDA: Carga de Consulta o Pedido (6 columnas) -->
+        <div class="lg:col-span-6 space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Paso 1 • Chau papel y lápiz</span>
+                        <h2 class="text-lg font-bold text-white mt-0.5">Cargar Consulta o Pedido del Cliente</h2>
+                    </div>
+                    <button onclick="cargarEjemploReal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                        ✨ Probar Ejemplo Real
+                    </button>
+                </div>
+
+                <!-- Canal por donde entró el cliente -->
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button onclick="setCanal('WhatsApp')" id="canal-WhatsApp" class="canal-btn bg-emerald-500/20 border border-emerald-500 text-emerald-300 py-2 rounded-xl text-xs font-bold">
+                        💬 WhatsApp
+                    </button>
+                    <button onclick="setCanal('Teléfono')" id="canal-Teléfono" class="canal-btn bg-slate-950 border border-slate-800 text-slate-400 py-2 rounded-xl text-xs font-semibold">
+                        📞 Teléfono
+                    </button>
+                    <button onclick="setCanal('Mostrador')" id="canal-Mostrador" class="canal-btn bg-slate-950 border border-slate-800 text-slate-400 py-2 rounded-xl text-xs font-semibold">
+                        🏪 Mostrador
+                    </button>
+                </div>
+
+                <!-- Subida opcional de captura de pantalla -->
+                <div class="mb-4">
+                    <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-800 border-dashed rounded-xl cursor-pointer bg-slate-950/60 hover:border-emerald-500/60 transition">
+                        <div id="uploadPlaceholder" class="flex items-center gap-2 text-center px-4">
+                            <span class="text-lg">📸</span>
+                            <div class="text-left">
+                                <p class="text-xs text-slate-300 font-semibold">Subir captura de WhatsApp (Opcional)</p>
+                                <p class="text-[10px] text-slate-500">IAtencion lee la foto automáticamente</p>
+                            </div>
+                        </div>
+                        <img id="previewImagen" class="hidden h-20 object-contain rounded-lg p-1" />
+                        <input id="inputImagen" type="file" accept="image/*" class="hidden" onchange="procesarImagen(event)" />
+                    </label>
+                    <button id="btnBorrarImagen" onclick="quitarImagen()" class="hidden mt-1 text-[11px] text-red-400 hover:underline">
+                        ✕ Quitar captura adjunta
+                    </button>
+                </div>
+
+                <!-- Texto en crudo -->
+                <label class="block text-xs text-slate-400 mb-1.5">
+                    Mensaje copiado o anotación rápida de lo que pide el cliente:
+                </label>
+                <textarea id="inputConsulta" rows="4" 
+                    placeholder="Ej: Hola! Necesito saber si tenés pastillas de freno para Toyota Corolla 2019 y cuánto sale cambiarlas hoy. Soy Marcos..."
+                    class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 mb-4"></textarea>
+
+                <!-- Datos rápidos para cotizar -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Precio Base / Lista ($ ARS):</label>
+                        <input type="number" id="inputMonto" placeholder="Ej: 140000" 
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Disponibilidad / Turno / Envío:</label>
+                        <input type="text" id="inputEntrega" value="En stock • Turno hoy 16:30 hs o envío inmediato" 
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <button onclick="procesarPedido()" id="btnProcesar"
+                    class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 px-6 rounded-xl shadow-lg shadow-emerald-500/10 transition flex items-center justify-center gap-2 text-sm">
+                    <span>⚡ Procesar con IAtencion y Armar Respuesta</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: Comanda Estructurada + Respuesta WhatsApp (6 columnas) -->
+        <div class="lg:col-span-6 space-y-6">
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl min-h-[460px] flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Paso 2 • Atención Instantánea</span>
+                            <h2 class="text-lg font-bold text-white mt-0.5">Ficha de Pedido + Cierre para WhatsApp</h2>
+                        </div>
+                        <span id="badgeCanalResultado" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full">
+                            Listo para atender
+                        </span>
+                    </div>
+
+                    <div id="estadoVacio" class="py-20 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl p-6">
+                        <p class="text-sm mb-1 text-slate-400 font-medium">Ninguna consulta sin responder, ningún pedido mal anotado.</p>
+                        <p class="text-xs text-slate-600">Cargá una consulta o tocá "Probar Ejemplo Real" para generar la orden interna y el mensaje de venta.</p>
+                    </div>
+
+                    <!-- Resultados -->
+                    <div id="panelResultado" class="hidden space-y-4">
+                        <!-- 1. Orden Interna Estructurada -->
+                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
+                                <span class="text-xs font-bold text-emerald-400 uppercase">📋 Ficha Interna de Pedido</span>
+                                <span id="resCliente" class="text-xs text-slate-300 font-semibold"></span>
+                            </div>
+                            <p id="resItems" class="text-xs text-slate-200 leading-relaxed whitespace-pre-line"></p>
+                        </div>
+
+                        <!-- 2. Burbuja de WhatsApp lista para enviar -->
+                        <div class="bg-[#005c4b] text-white p-4 rounded-2xl rounded-tl-none shadow-md">
+                            <div class="text-[10px] uppercase font-bold text-emerald-200 mb-1">Respuesta personalizada lista para copiar:</div>
+                            <p id="resMensaje" class="text-sm whitespace-pre-line leading-relaxed"></p>
+                            <div class="text-right text-[10px] text-emerald-200/70 mt-1">IAtencion ✓✓</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones Finales -->
+                <div id="botonesAccion" class="hidden pt-4 mt-4 border-t border-slate-800">
+                    <button onclick="copiarMensaje()" id="btnCopiar"
+                        class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 px-4 rounded-xl text-xs transition">
+                        📋 Copiar Respuesta para WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let canalSeleccionado = 'WhatsApp';
+        let imagenBase64 = null;
+
+        window.onload = () => {
+            const savedKey = localStorage.getItem('iatencion_openai_key');
+            if (savedKey) {
+                document.getElementById('apiKeyInput').value = savedKey;
+                verificarApiKey();
+            }
+        };
+
+        function verificarApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            const badge = document.getElementById('badgeEstadoIA');
+            if (key.startsWith('sk-')) {
+                localStorage.setItem('iatencion_openai_key', key);
+                badge.textContent = '🟢 OpenAI Conectado';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+            } else {
+                localStorage.removeItem('iatencion_openai_key');
+                badge.textContent = 'Simulador Activo';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+            }
+        }
+
+        function setCanal(canal) {
+            canalSeleccionado = canal;
+            document.querySelectorAll('.canal-btn').forEach(b => {
+                b.className = 'canal-btn bg-slate-950 border border-slate-800 text-slate-400 py-2 rounded-xl text-xs font-semibold';
+            });
+            document.getElementById('canal-' + canal).className = 'canal-btn bg-emerald-500/20 border border-emerald-500 text-emerald-300 py-2 rounded-xl text-xs font-bold';
+        }
+
+        function procesarImagen(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagenBase64 = e.target.result;
+                document.getElementById('previewImagen').src = imagenBase64;
+                document.getElementById('previewImagen').classList.remove('hidden');
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+                document.getElementById('btnBorrarImagen').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function quitarImagen() {
+            imagenBase64 = null;
+            document.getElementById('inputImagen').value = '';
+            document.getElementById('previewImagen').classList.add('hidden');
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('btnBorrarImagen').classList.add('hidden');
+        }
+
+        function cargarEjemploReal() {
+            document.getElementById('inputConsulta').value = 'Hola! Te consulto por una bomba de embrague y colocación, me dijeron que ustedes lo hacen en el día. Cuánto me sale en efectivo o si tenés cuotas con tarjeta? Soy Lucas.';
+            document.getElementById('inputMonto').value = '140000';
+            document.getElementById('inputEntrega').value = 'Stock disponible • Próximo turno libre: Mañana 8:30 hs';
+        }
+
+        async function procesarPedido() {
+            const consulta = document.getElementById('inputConsulta').value.trim();
+            const monto = parseFloat(document.getElementById('inputMonto').value) || 0;
+            const entrega = document.getElementById('inputEntrega').value.trim();
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            const btn = document.getElementById('btnProcesar');
+
+            if (!consulta && !imagenBase64) {
+                alert('Por favor ingresá la consulta del cliente, subí una captura o tocá "Probar Ejemplo Real".');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Analizando consulta y estructurando venta...';
+            document.getElementById('estadoVacio').classList.add('hidden');
+            document.getElementById('panelResultado').classList.remove('hidden');
+
+            try {
+                if (apiKey.startsWith('sk-')) {
+                    await llamarOpenAI(apiKey, consulta, imagenBase64, monto, entrega, canalSeleccionado);
+                } else {
+                    await simularIAtencion(consulta, monto, entrega, canalSeleccionado);
+                }
+                document.getElementById('botonesAccion').classList.remove('hidden');
+            } catch (err) {
+                document.getElementById('resItems').textContent = 'Error de conexión con la API: ' + err.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '⚡ Procesar con IAtencion y Armar Respuesta';
+            }
+        }
+
+        async function simularIAtencion(consulta, monto, entrega, canal) {
+            await new Promise(r => setTimeout(r, 600));
+            const lista = monto > 0 ? `$${monto.toLocaleString('es-AR')}` : 'A cotizar';
+            const efectivo = monto > 0 ? `$${Math.round(monto * 0.893).toLocaleString('es-AR')}` : 'Con descuento';
+
+            document.getElementById('badgeCanalResultado').textContent = `Canal: ${canal}`;
+            document.getElementById('resCliente').textContent = `Ingreso vía ${canal}`;
+            document.getElementById('resItems').textContent = `• Solicitud detectada: ${consulta || 'Lectura de captura de pantalla'}\n• Precio Base informando: ${lista} (Efectivo: ${efectivo})\n• Disponibilidad asignada: ${entrega}`;
+            document.getElementById('resMensaje').textContent = `¡Hola! ¿Cómo estás? Gracias por comunicarte. Te paso en limpio los detalles de lo que me consultás:\n\n🔧 *Pedido / Consulta:* ${consulta || 'Según captura enviada'}\n💳 *Precio de lista (Débito o 1 pago):* ${lista}\n💵 *Efectivo o Transferencia:* ${efectivo}\n📅 *Disponibilidad:* ${entrega}\n\nAvisame si querés que ya te lo deje separado y agendado a tu nombre. ¡Cualquier duda a disposición!`;
+        }
+
+        async function llamarOpenAI(apiKey, consulta, base64Img, monto, entrega, canal) {
+            const efectivo = monto > 0 ? Math.round(monto * 0.893) : 0;
+            const contenido = [
+                {
+                    type: "text",
+                    text: `Sos IAtencion Clientes, el copiloto inteligente de un comercio/taller en Argentina que transforma consultas manuales de ${canal} en ventas cerradas.
+                    Consulta o pedido del cliente: "${consulta || 'Ver captura de pantalla adjunta'}".
+                    Precio de lista informado por el local: $${monto} (Precio con descuento en efectivo/transferencia: $${efectivo}).
+                    Entrega o turno disponible: "${entrega}".
+
+                    Respondé en formato JSON estricto con 3 claves:
+                    1. "cliente": Nombre del cliente si aparece y canal (${canal}).
+                    2. "comanda": Resumen interno en viñetas de los productos/servicios pedidos y condiciones para que el negocio no anote a mano.
+                    3. "mensaje": Mensaje cordial en español argentino listo para enviar por WhatsApp pasando el presupuesto claro, la disponibilidad y cerrando el pedido.`
+                }
+            ];
+
+            if (base64Img) {
+                contenido.push({ type: "image_url", image_url: { url: base64Img } });
+            }
+
+            const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    response_format: { type: "json_object" },
+                    messages: [{ role: "user", content: contenido }]
+                })
+            });
+
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message);
+            const json = JSON.parse(data.choices[0].message.content);
+
+            document.getElementById('badgeCanalResultado').textContent = `OpenAI Activo • ${canal}`;
+            document.getElementById('resCliente').textContent = json.cliente;
+            document.getElementById('resItems').textContent = json.comanda;
+            document.getElementById('resMensaje').textContent = json.mensaje;
+        }
+
+        function copiarMensaje() {
+            navigator.clipboard.writeText(document.getElementById('resMensaje').textContent);
+            const btn = document.getElementById('btnCopiar');
+            btn.textContent = '✅ ¡Mensaje copiado para WhatsApp!';
+            setTimeout(() => btn.textContent = '📋 Copiar Respuesta para WhatsApp', 2000);
+        }
+    </script>
+</body>
+</html>
